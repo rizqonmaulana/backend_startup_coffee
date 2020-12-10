@@ -71,7 +71,6 @@ module.exports = {
     })
   },
   deleteProductModel: (id) => {
-    console.log(id)
     return new Promise((resolve, reject) => {
       connection.query(
         'DELETE FROM product WHERE product_id = ?',
