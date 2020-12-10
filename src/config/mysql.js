@@ -3,7 +3,7 @@ const connection = mysql.createConnection({
   host: 'localhost',
   user: 'root',
   password: '',
-  database: 'pos_app',
+  database: 'startup_coffee',
   timezone: 'UTC'
 })
 
