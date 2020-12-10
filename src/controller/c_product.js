@@ -3,7 +3,8 @@ const {
   getProductCountModel,
   getProductByIdModel,
   postProductModel,
-  patchProductModel
+  patchProductModel,
+  deleteProductModel
 } = require('../model/m_product')
 const helper = require('../helper/response')
 const qs = require('querystring')
@@ -71,17 +72,31 @@ module.exports = {
   postProduct: async (request, response) => {
     try {
       const {
-        category_id,
-        product_name,
-        product_price,
-        product_status
+        productName,
+        productPrice,
+        productPic,
+        productDesc,
+        productStartHour,
+        productEndHour,
+        productQty,
+        categoryId,
+        promoId,
+        sizeId,
+        deliveryId
       } = request.body
       const setData = {
-        category_id,
-        product_name,
-        product_price,
-        product_created_at: new Date(),
-        product_status
+        product_name: productName,
+        product_price: productPrice,
+        product_pic: productPic,
+        product_desc: productDesc,
+        product_start_hour: productStartHour,
+        product_end_hour: productEndHour,
+        product_qty: productQty,
+        category_id: categoryId,
+        promo_id: promoId,
+        size_id: sizeId,
+        delivery_id: deliveryId,
+        product_created_at: new Date()
       }
       const result = await postProductModel(setData)
 
@@ -94,26 +109,54 @@ module.exports = {
     try {
       const { id } = request.params
       const {
-        category_id,
-        product_name,
-        product_price,
-        product_status
+        productName,
+        productPrice,
+        productPic,
+        productDesc,
+        productStartHour,
+        productEndHour,
+        productQty,
+        categoryId,
+        promoId,
+        sizeId,
+        deliveryId
       } = request.body
       // disini kondisi validation
       const setData = {
-        category_id,
-        product_name,
-        product_price,
-        product_updated_at: new Date(),
-        product_status
+        product_name: productName,
+        product_price: productPrice,
+        product_pic: productPic,
+        product_desc: productDesc,
+        product_start_hour: productStartHour,
+        product_end_hour: productEndHour,
+        product_qty: productQty,
+        category_id: categoryId,
+        promo_id: promoId,
+        size_id: sizeId,
+        delivery_id: deliveryId,
+        product_updated_at: new Date()
       }
       const checkId = await getProductByIdModel(id)
       if (checkId.length > 0) {
         const result = await patchProductModel(setData, id)
-        console.log(result)
+        return helper.response(response, 200, 'Success Post Product', result)
       } else {
         return helper.response(response, 404, `Product By Id : ${id} Not Found`)
       }
+    } catch (error) {
+      return helper.response(response, 400, 'Bad Request', error)
+    }
+  },
+  deleteProduct: async (request, response) => {
+    try {
+      const { id } = request.params
+      const result = await deleteProductModel(id)
+      return helper.response(
+        response,
+        200,
+        `Success Delete Product by id : ${id}`,
+        result
+      )
     } catch (error) {
       return helper.response(response, 400, 'Bad Request', error)
     }
