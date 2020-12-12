@@ -4,7 +4,9 @@ const {
   getProductByIdModel,
   postProductModel,
   patchProductModel,
-  deleteProductModel
+  deleteProductModel,
+  getProductBySearchModel,
+  getProductCountWithSearchModel
 } = require('../model/m_product')
 const helper = require('../helper/response')
 const qs = require('querystring')
@@ -12,10 +14,18 @@ const qs = require('querystring')
 module.exports = {
   getProduct: async (request, response) => {
     try {
-      let { page, limit } = request.query
+      let { search, page, limit } = request.query
+
       page = parseInt(page)
       limit = parseInt(limit)
-      const totalData = await getProductCountModel()
+
+      // get totalData with search / not
+      let totalData
+      if (search) {
+        totalData = await getProductCountWithSearchModel(search)
+      } else {
+        totalData = await getProductCountModel()
+      }
       const totalPage = Math.ceil(totalData / limit)
       const offset = page * limit - limit
       const prevLink =
@@ -39,7 +49,15 @@ module.exports = {
         prevLink: prevLink && `http://localhost:3000/product?${prevLink}`
       }
 
-      const result = await getProductModel(limit, offset)
+      let result
+
+      // get result with search / not
+      if (search) {
+        result = await getProductBySearchModel(search, limit, offset)
+      } else {
+        result = await getProductModel(limit, offset)
+      }
+
       return helper.response(
         response,
         200,

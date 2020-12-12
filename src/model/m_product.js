@@ -12,6 +12,18 @@ module.exports = {
       )
     })
   },
+  getProductBySearchModel: (search, limit, offset) => {
+    return new Promise((resolve, reject) => {
+      connection.query(
+        `SELECT * FROM product WHERE product_name LIKE '%${search}%' LIMIT ${limit} OFFSET ${offset}`,
+        (error, result) => {
+          !error ? resolve(result) : reject(new Error(error))
+          console.log(result)
+          console.log(error)
+        }
+      )
+    })
+  },
   getProductByIdModel: (id) => {
     return new Promise((resolve, reject) => {
       connection.query(
@@ -56,6 +68,16 @@ module.exports = {
           } else {
             reject(new Error(error))
           }
+        }
+      )
+    })
+  },
+  getProductCountWithSearchModel: (search) => {
+    return new Promise((resolve, reject) => {
+      connection.query(
+        `SELECT COUNT(*) AS total FROM product WHERE product_name LIKE '%${search}%'`,
+        (error, result) => {
+          !error ? resolve(result[0].total) : reject(new Error(error))
         }
       )
     })
