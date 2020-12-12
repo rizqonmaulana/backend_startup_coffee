@@ -6,7 +6,9 @@ const {
   patchProductModel,
   deleteProductModel,
   getProductBySearchModel,
-  getProductCountWithSearchModel
+  getProductCountWithSearchModel,
+  sortProductModel,
+  getProductBySearchAndSortModel
 } = require('../model/m_product')
 const helper = require('../helper/response')
 const qs = require('querystring')
@@ -14,7 +16,7 @@ const qs = require('querystring')
 module.exports = {
   getProduct: async (request, response) => {
     try {
-      let { search, page, limit } = request.query
+      let { search, page, limit, sortBy, sortType } = request.query
 
       page = parseInt(page)
       limit = parseInt(limit)
@@ -26,6 +28,7 @@ module.exports = {
       } else {
         totalData = await getProductCountModel()
       }
+
       const totalPage = Math.ceil(totalData / limit)
       const offset = page * limit - limit
       const prevLink =
@@ -51,9 +54,19 @@ module.exports = {
 
       let result
 
-      // get result with search / not
-      if (search) {
+      // decide result model to use
+      if (search && sortBy && sortType) {
+        result = await getProductBySearchAndSortModel(
+          search,
+          sortBy,
+          sortType,
+          limit,
+          offset
+        )
+      } else if (search) {
         result = await getProductBySearchModel(search, limit, offset)
+      } else if (sortBy && sortType) {
+        result = await sortProductModel(sortBy, sortType, limit, offset)
       } else {
         result = await getProductModel(limit, offset)
       }

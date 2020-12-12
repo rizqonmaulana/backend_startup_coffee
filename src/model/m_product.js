@@ -92,6 +92,18 @@ module.exports = {
       )
     })
   },
+  sortProductModel: (sortBy, sortType, limit, offset) => {
+    return new Promise((resolve, reject) => {
+      console.log(
+        connection.query(
+          `SELECT * FROM product ORDER BY ${sortBy} ${sortType} LIMIT ${limit} OFFSET ${offset}`,
+          (error, result) => {
+            !error ? resolve(result) : reject(new Error(error))
+          }
+        )
+      )
+    })
+  },
   deleteProductModel: (id) => {
     return new Promise((resolve, reject) => {
       connection.query(
@@ -100,6 +112,20 @@ module.exports = {
         (error, result) => {
           !error ? resolve(result) : reject(new Error(error))
         }
+      )
+    })
+  },
+  getProductBySearchAndSortModel: (search, sortBy, sortType, limit, offset) => {
+    return new Promise((resolve, reject) => {
+      console.log(
+        connection.query(
+          `SELECT * FROM product WHERE product_name LIKE '%${search}%' ORDER BY ${sortBy} ${sortType} LIMIT ${limit} OFFSET ${offset}`,
+          (error, result) => {
+            !error ? resolve(result) : reject(new Error(error))
+            console.log(result)
+            console.log(error)
+          }
+        )
       )
     })
   }
