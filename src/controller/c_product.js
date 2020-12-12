@@ -12,7 +12,7 @@ const {
   getProductDetailModel
 } = require('../model/m_product')
 const { postSizeModel, patchSizeModel } = require('../model/m_size')
-const { postDeliveryModel } = require('../model/m_delivery')
+const { postDeliveryModel, patchDeliveryModel } = require('../model/m_delivery')
 const helper = require('../helper/response')
 const qs = require('querystring')
 
@@ -186,7 +186,10 @@ module.exports = {
         sizeExtraLarge,
         size250gr,
         size300gr,
-        size500gr
+        size500gr,
+        deliveryHome,
+        deliveryDineIn,
+        deliveryTakeAway
       } = request.body
       // disini kondisi validation
       const setDataSize = {
@@ -196,6 +199,12 @@ module.exports = {
         size_250gr: size250gr,
         size_300gr: size300gr,
         size_500gr: size500gr
+      }
+
+      const setDataDelivery = {
+        delivery_home: deliveryHome,
+        delivery_dine_in: deliveryDineIn,
+        delivery_take_away: deliveryTakeAway
       }
 
       const setData = {
@@ -214,14 +223,13 @@ module.exports = {
       }
 
       const getSizeId = setData.size_id
+      const getDeliveryId = setData.delivery_id
 
       const checkId = await getProductByIdModel(id)
 
       if (checkId.length > 0) {
-        console.log('bisa ?:')
-        const sizeResult = await patchSizeModel(setDataSize, getSizeId)
-
-        console.log(sizeResult)
+        await patchSizeModel(setDataSize, getSizeId)
+        await patchDeliveryModel(setDataDelivery, getDeliveryId)
         const result = await patchProductModel(setData, id)
         return helper.response(response, 200, 'Success Post Product', result)
       } else {

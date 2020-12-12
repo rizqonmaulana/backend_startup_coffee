@@ -23,22 +23,20 @@ module.exports = {
   },
   patchSizeModel: (setDataSize, getSizeId) => {
     return new Promise((resolve, reject) => {
-      console.log(
-        connection.query(
-          'UPDATE size SET ? WHERE size_id = ?',
-          [setDataSize, getSizeId],
-          (error, result) => {
-            if (!error) {
-              const newResult = {
-                size_id: getSizeId,
-                ...setDataSize
-              }
-              resolve(newResult)
-            } else {
-              reject(new Error(error))
+      connection.query(
+        'UPDATE size SET ? WHERE size_id = ?',
+        [setDataSize, getSizeId],
+        (error, result) => {
+          if (!error) {
+            const newResult = {
+              size_id: getSizeId,
+              ...setDataSize
             }
+            resolve(newResult)
+          } else {
+            reject(new Error(error))
           }
-        )
+        }
       )
     })
   }
