@@ -10,6 +10,7 @@ const {
   sortProductModel,
   getProductBySearchAndSortModel
 } = require('../model/m_product')
+const { postSizeModel } = require('../model/m_size')
 const helper = require('../helper/response')
 const qs = require('querystring')
 
@@ -112,9 +113,26 @@ module.exports = {
         productQty,
         categoryId,
         promoId,
-        sizeId,
-        deliveryId
+        deliveryId,
+        sizeRegular,
+        sizeLarge,
+        sizeExtraLarge,
+        size250gr,
+        size300gr,
+        size500gr
       } = request.body
+
+      const setDataSize = {
+        size_regular: sizeRegular,
+        size_large: sizeLarge,
+        size_extra_large: sizeExtraLarge,
+        size_250gr: size250gr,
+        size_300gr: size300gr,
+        size_500gr: size500gr
+      }
+
+      const sizeResult = await postSizeModel(setDataSize)
+
       const setData = {
         product_name: productName,
         product_price: productPrice,
@@ -125,10 +143,11 @@ module.exports = {
         product_qty: productQty,
         category_id: categoryId,
         promo_id: promoId,
-        size_id: sizeId,
+        size_id: sizeResult.size_id,
         delivery_id: deliveryId,
         product_created_at: new Date()
       }
+
       const result = await postProductModel(setData)
 
       return helper.response(response, 200, 'Success Post Product', result)
