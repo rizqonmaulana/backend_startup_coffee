@@ -4,11 +4,13 @@ const {
   getProductById,
   postProduct,
   patchProduct,
-  deleteProduct
+  deleteProduct,
+  getProductDetail
 } = require('../controller/c_product')
 
 router.get('/', getProduct)
 router.get('/:id', getProductById)
+router.get('/detail/:id', getProductDetail)
 router.post('/', postProduct)
 router.patch('/:id', patchProduct)
 router.delete('/:id', deleteProduct)

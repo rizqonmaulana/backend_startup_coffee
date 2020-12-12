@@ -8,7 +8,8 @@ const {
   getProductBySearchModel,
   getProductCountWithSearchModel,
   sortProductModel,
-  getProductBySearchAndSortModel
+  getProductBySearchAndSortModel,
+  getProductDetailModel
 } = require('../model/m_product')
 const { postSizeModel } = require('../model/m_size')
 const { postDeliveryModel } = require('../model/m_delivery')
@@ -200,6 +201,24 @@ module.exports = {
       if (checkId.length > 0) {
         const result = await patchProductModel(setData, id)
         return helper.response(response, 200, 'Success Post Product', result)
+      } else {
+        return helper.response(response, 404, `Product By Id : ${id} Not Found`)
+      }
+    } catch (error) {
+      return helper.response(response, 400, 'Bad Request', error)
+    }
+  },
+  getProductDetail: async (request, response) => {
+    try {
+      const { id } = request.params
+      const result = await getProductDetailModel(id)
+      if (result.length > 0) {
+        return helper.response(
+          response,
+          200,
+          `Success Get Product By Id ${id}`,
+          result
+        )
       } else {
         return helper.response(response, 404, `Product By Id : ${id} Not Found`)
       }
