@@ -11,6 +11,7 @@ const {
   getProductBySearchAndSortModel
 } = require('../model/m_product')
 const { postSizeModel } = require('../model/m_size')
+const { postDeliveryModel } = require('../model/m_delivery')
 const helper = require('../helper/response')
 const qs = require('querystring')
 
@@ -113,13 +114,15 @@ module.exports = {
         productQty,
         categoryId,
         promoId,
-        deliveryId,
         sizeRegular,
         sizeLarge,
         sizeExtraLarge,
         size250gr,
         size300gr,
-        size500gr
+        size500gr,
+        deliveryHome,
+        deliveryDineIn,
+        deliveryTakeAway
       } = request.body
 
       const setDataSize = {
@@ -131,7 +134,14 @@ module.exports = {
         size_500gr: size500gr
       }
 
+      const setDataDelivery = {
+        delivery_home: deliveryHome,
+        delivery_dine_in: deliveryDineIn,
+        delivery_take_away: deliveryTakeAway
+      }
+
       const sizeResult = await postSizeModel(setDataSize)
+      const deliveryResult = await postDeliveryModel(setDataDelivery)
 
       const setData = {
         product_name: productName,
@@ -144,7 +154,7 @@ module.exports = {
         category_id: categoryId,
         promo_id: promoId,
         size_id: sizeResult.size_id,
-        delivery_id: deliveryId,
+        delivery_id: deliveryResult.delivery_id,
         product_created_at: new Date()
       }
 
