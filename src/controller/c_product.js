@@ -11,7 +11,7 @@ const {
   getProductBySearchAndSortModel,
   getProductDetailModel
 } = require('../model/m_product')
-const { postSizeModel } = require('../model/m_size')
+const { postSizeModel, patchSizeModel } = require('../model/m_size')
 const { postDeliveryModel } = require('../model/m_delivery')
 const helper = require('../helper/response')
 const qs = require('querystring')
@@ -180,9 +180,24 @@ module.exports = {
         categoryId,
         promoId,
         sizeId,
-        deliveryId
+        deliveryId,
+        sizeRegular,
+        sizeLarge,
+        sizeExtraLarge,
+        size250gr,
+        size300gr,
+        size500gr
       } = request.body
       // disini kondisi validation
+      const setDataSize = {
+        size_regular: sizeRegular,
+        size_large: sizeLarge,
+        size_extra_large: sizeExtraLarge,
+        size_250gr: size250gr,
+        size_300gr: size300gr,
+        size_500gr: size500gr
+      }
+
       const setData = {
         product_name: productName,
         product_price: productPrice,
@@ -197,8 +212,16 @@ module.exports = {
         delivery_id: deliveryId,
         product_updated_at: new Date()
       }
+
+      const getSizeId = setData.size_id
+
       const checkId = await getProductByIdModel(id)
+
       if (checkId.length > 0) {
+        console.log('bisa ?:')
+        const sizeResult = await patchSizeModel(setDataSize, getSizeId)
+
+        console.log(sizeResult)
         const result = await patchProductModel(setData, id)
         return helper.response(response, 200, 'Success Post Product', result)
       } else {
