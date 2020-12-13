@@ -16,7 +16,21 @@ module.exports = {
     try {
       const { customerId } = request.params
       const result = await getOrderModel(customerId)
-      return helper.response(response, 200, 'Success get order history', result)
+
+      if (result.length > 0) {
+        return helper.response(
+          response,
+          200,
+          'Success get order history',
+          result
+        )
+      } else {
+        return helper.response(
+          response,
+          404,
+          `Order history by customer id : ${customerId} Not Found`
+        )
+      }
     } catch (error) {
       return helper.response(response, 400, 'Bad Request', error)
     }
