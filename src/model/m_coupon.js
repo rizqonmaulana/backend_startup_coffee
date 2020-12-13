@@ -68,12 +68,9 @@ module.exports = {
               coupon_id: id,
               ...setData
             }
-            console.log(newResult)
             resolve(newResult)
           } else {
             reject(new Error(error))
-            console.log(result)
-            console.log(error)
           }
         }
       )

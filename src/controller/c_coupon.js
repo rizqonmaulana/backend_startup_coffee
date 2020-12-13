@@ -27,7 +27,6 @@ module.exports = {
           ? qs.stringify({ ...request.query, ...{ page: page + 1 } })
           : null
 
-      console.log(request.query)
       console.log(qs.stringify(request.query))
 
       const pageInfo = {
@@ -111,10 +110,14 @@ module.exports = {
         coupon_updated_at: new Date()
       }
 
-      console.log(setData)
+      const checkId = await getCouponByIdModel(id)
 
-      const result = await patchCouponModel(setData, id)
-      return helper.response(response, 200, 'Success post coupon', result)
+      if (checkId.length > 0) {
+        const result = await patchCouponModel(setData, id)
+        return helper.response(response, 200, 'Success patch coupon', result)
+      } else {
+        return helper.response(response, 404, `Coupon By Id : ${id} Not Found`)
+      }
     } catch (error) {
       return helper.response(response, 400, 'Bad Request', error)
     }
@@ -122,13 +125,20 @@ module.exports = {
   deleteCoupon: async (request, response) => {
     try {
       const { id } = request.params
-      const result = await deleteCouponModel(id)
-      return helper.response(
-        response,
-        200,
-        `Success delete coupon by id : ${id}`,
-        result
-      )
+
+      const checkId = await getCouponByIdModel(id)
+
+      if (checkId.length > 0) {
+        const result = await deleteCouponModel(id)
+        return helper.response(
+          response,
+          200,
+          `Success delete coupon by id : ${id}`,
+          result
+        )
+      } else {
+        return helper.response(response, 404, `Coupon By Id : ${id} Not Found`)
+      }
     } catch (error) {
       return helper.response(response, 400, 'Bad Request', error)
     }
