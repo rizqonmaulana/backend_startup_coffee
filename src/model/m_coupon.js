@@ -37,7 +37,7 @@ module.exports = {
       connection.query('INSERT INTO coupon SET ?', setData, (error, result) => {
         if (!error) {
           const newResult = {
-            coupon_id: result.insertedId,
+            coupon_id: result.insertId,
             ...setData
           }
           resolve(newResult)
