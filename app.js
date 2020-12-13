@@ -3,6 +3,9 @@ const morgan = require('morgan')
 const bodyParser = require('body-parser')
 const routesNavigation = require('./src/routesNavigation')
 const cors = require('cors')
+require('dotenv').config()
+
+const port = process.env.PORT
 
 const app = express()
 app.use(morgan('dev'))
@@ -24,6 +27,6 @@ app.get('*', (req, res) => {
   res.status(404).send('Not Found Please Check again ! :)')
 })
 
-app.listen(3000, () => {
+app.listen(port, () => {
   console.log('Express app is Listening on port 3000')
 })
