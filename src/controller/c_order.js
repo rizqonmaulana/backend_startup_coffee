@@ -8,6 +8,7 @@ const {
   postOrderDetailModel,
   deleteOrderDetailModel
 } = require('../model/m_order_detail')
+const { getCouponByCodeModel } = require('../model/m_coupon')
 const helper = require('../helper/response')
 
 module.exports = {
@@ -25,20 +26,55 @@ module.exports = {
       const data = request.body
       let i
       let result
+      let getDiscountPromo
+      let getStartPromo
+      let getEndPromo
+      let afterDiscount
+      let discount
 
       for (i = 0; i < data.length; i++) {
         if (i === 0) {
           const {
-            orderInvoice,
             orderPaymentMethod,
             orderTotal,
-            customerId
+            customerId,
+            promoCode
           } = data[0]
+
+          const dateNow = new Date()
+          const getInvoice =
+            Math.random() * (9999999999 - 100000000) + 100000000
+          const orderInvoice = Math.ceil(getInvoice)
+          console.log(orderInvoice)
+
+          // is promo code valid ?
+          if (promoCode) {
+            const getCouponData = await getCouponByCodeModel(promoCode)
+            if (getCouponData.length > 0) {
+              getDiscountPromo = getCouponData[0].coupon_discount
+              getStartPromo = getCouponData[0].coupon_start_date
+              getEndPromo = getCouponData[0].coupon_end_date
+
+              if (dateNow >= getStartPromo && dateNow <= getEndPromo) {
+                discount = (orderTotal * getDiscountPromo) / 100
+                afterDiscount = orderTotal - discount
+              } else {
+                afterDiscount = orderTotal
+              }
+            } else {
+              afterDiscount = orderTotal
+            }
+          } else {
+            afterDiscount = orderTotal
+          }
+
+          // console.log(afterDiscount)
+          // console.log(discount)
 
           const setData = {
             order_invoice: orderInvoice,
             order_payment_method: orderPaymentMethod,
-            order_total: orderTotal,
+            order_total: afterDiscount,
             customer_id: customerId
           }
 
@@ -52,13 +88,21 @@ module.exports = {
             orderDetailPrice
           } = data[i]
 
+          // get discount ?
+          if (discount) {
+            discount = (orderDetailPrice * getDiscountPromo) / 100
+            afterDiscount = orderDetailPrice - discount
+          } else {
+            afterDiscount = orderDetailPrice
+          }
+
           const setDataOrderDetail = {
             order_id: result.order_id,
             product_id: productId,
             order_detail_delivery: orderDetailDelivery,
             order_detail_size: orderDetailSize,
             order_detail_qty: orderDetailQty,
-            order_detail_price: orderDetailPrice
+            order_detail_price: afterDiscount
           }
 
           await postOrderDetailModel(setDataOrderDetail)

@@ -22,6 +22,16 @@ module.exports = {
       )
     })
   },
+  getCouponByCodeModel: (id) => {
+    return new Promise((resolve, reject) => {
+      connection.query(
+        `SELECT * FROM coupon WHERE coupon_code = '${id}'`,
+        (error, result) => {
+          !error ? resolve(result) : reject(new Error(error))
+        }
+      )
+    })
+  },
   getCouponCountModel: () => {
     return new Promise((resolve, reject) => {
       connection.query(

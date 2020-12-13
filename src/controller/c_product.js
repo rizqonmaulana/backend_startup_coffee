@@ -114,7 +114,6 @@ module.exports = {
         productEndHour,
         productQty,
         categoryId,
-        promoId,
         sizeRegular,
         sizeLarge,
         sizeExtraLarge,
@@ -153,7 +152,6 @@ module.exports = {
         product_end_hour: productEndHour,
         product_qty: productQty,
         category_id: categoryId,
-        promo_id: promoId,
         size_id: sizeResult.size_id,
         delivery_id: deliveryResult.delivery_id,
         product_created_at: new Date()
