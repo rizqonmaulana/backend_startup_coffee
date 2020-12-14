@@ -256,13 +256,19 @@ module.exports = {
   deleteProduct: async (request, response) => {
     try {
       const { id } = request.params
-      const result = await deleteProductModel(id)
-      return helper.response(
-        response,
-        200,
-        `Success Delete Product by id : ${id}`,
-        result
-      )
+
+      const checkId = await getProductByIdModel(id)
+      if (checkId.length > 0) {
+        const result = await deleteProductModel(id)
+        return helper.response(
+          response,
+          200,
+          `Success Delete Product by id : ${id}`,
+          result
+        )
+      } else {
+        return helper.response(response, 404, `Product By Id : ${id} Not Found`)
+      }
     } catch (error) {
       return helper.response(response, 400, 'Bad Request', error)
     }
