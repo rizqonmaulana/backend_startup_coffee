@@ -2,7 +2,8 @@ const {
   getOrderModel,
   getOrderDetailModel,
   postOrderModel,
-  deleteOrderModel
+  deleteOrderModel,
+  getOrderByIdModel
 } = require('../model/m_order')
 const {
   postOrderDetailModel,
@@ -131,14 +132,21 @@ module.exports = {
   deleteOrder: async (request, response) => {
     try {
       const { id } = request.params
-      await deleteOrderDetailModel(id)
-      const result = await deleteOrderModel(id)
-      return helper.response(
-        response,
-        200,
-        `Success delete order by id : ${id}`,
-        result
-      )
+      const checkId = await getOrderByIdModel(id)
+
+      if (checkId.length > 0) {
+        const orderId = checkId[0].order_id
+        const result = await deleteOrderModel(id)
+        await deleteOrderDetailModel(orderId)
+        return helper.response(
+          response,
+          200,
+          `Success delete order by id : ${id}`,
+          result
+        )
+      } else {
+        return helper.response(response, 404, `Product By Id : ${id} Not Found`)
+      }
     } catch (error) {
       return helper.response(response, 400, 'Bad Request', error)
     }

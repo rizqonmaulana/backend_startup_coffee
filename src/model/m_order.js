@@ -11,6 +11,16 @@ module.exports = {
       )
     })
   },
+  getOrderByIdModel: (id) => {
+    return new Promise((resolve, reject) => {
+      connection.query(
+        `SELECT * FROM orders WHERE order_id = ${id}`,
+        (error, result) => {
+          !error ? resolve(result) : reject(new Error(error))
+        }
+      )
+    })
+  },
   getOrderDetailModel: (invoice) => {
     return new Promise((resolve, reject) => {
       connection.query(
