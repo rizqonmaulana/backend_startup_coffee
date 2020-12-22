@@ -4,7 +4,7 @@ module.exports = {
   getProductModel: (limit, offset) => {
     return new Promise((resolve, reject) => {
       connection.query(
-        'SELECT * FROM product LIMIT ? OFFSET ?',
+        'SELECT * FROM product JOIN size ON product.size_id = size.size_id JOIN delivery ON product.delivery_id = delivery.delivery_id LIMIT ? OFFSET ?',
         [limit, offset],
         (error, result) => {
           !error ? resolve(result) : reject(new Error(error))
