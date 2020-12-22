@@ -36,6 +36,20 @@ module.exports = {
       )
     })
   },
+  getOrderHistoryModel: (customerId) => {
+    return new Promise((resolve, reject) => {
+      connection.query(
+        `SELECT orders.order_id, product.product_id, order_detail.order_detail_id, 
+        order_detail.order_detail_id, product.product_id, product_name, product_pic, 
+        order_detail.order_detail_qty, order_detail.order_detail_price, 
+        order_invoice FROM product JOIN order_detail ON product.product_id=order_detail.product_id 
+        JOIN orders ON order_detail.order_id=orders.order_id WHERE orders.customer_id = ${customerId}`,
+        (error, result) => {
+          !error ? resolve(result) : reject(new Error(error))
+        }
+      )
+    })
+  },
   postOrderModel: (setData) => {
     return new Promise((resolve, reject) => {
       connection.query('INSERT INTO orders SET ?', setData, (error, result) => {
