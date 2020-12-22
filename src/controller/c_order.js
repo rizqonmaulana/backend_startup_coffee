@@ -3,11 +3,13 @@ const {
   getOrderDetailModel,
   postOrderModel,
   deleteOrderModel,
-  getOrderByIdModel
+  getOrderByIdModel,
+  getOrderHistoryModel
 } = require('../model/m_order')
 const {
   postOrderDetailModel,
-  deleteOrderDetailModel
+  deleteOrderDetailModel,
+  deleteOrderDetailByIdModel
 } = require('../model/m_order_detail')
 const { getCouponByCodeModel } = require('../model/m_coupon')
 const helper = require('../helper/response')
@@ -171,6 +173,39 @@ module.exports = {
           `Order by invoice : ${invoice} Not Found`
         )
       }
+    } catch (error) {
+      return helper.response(response, 400, 'Bad Request', error)
+    }
+  },
+  getOrderHistory: async (request, response) => {
+    try {
+      const { customerId } = request.params
+      console.log(customerId)
+      const result = await getOrderHistoryModel(customerId)
+
+      if (result.length > 0) {
+        return helper.response(
+          response,
+          200,
+          `Success get history by user id : ${customerId}`,
+          result
+        )
+      } else {
+        return helper.response(
+          response,
+          404,
+          `Order history by user id : ${customerId} Not Found`
+        )
+      }
+    } catch (error) {
+      return helper.response(response, 400, 'Bad Request', error)
+    }
+  },
+  deleteOrderDetailById: async (request, response) => {
+    try {
+      const { id } = request.params
+      const result = await deleteOrderDetailByIdModel(id)
+      return helper.response(response, 200, 'Success delete order', result)
     } catch (error) {
       return helper.response(response, 400, 'Bad Request', error)
     }
