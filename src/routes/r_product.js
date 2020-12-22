@@ -1,4 +1,5 @@
 const router = require('express').Router()
+const { authorization } = require('../middleware/auth')
 const {
   getProduct,
   getProductById,
@@ -8,7 +9,7 @@ const {
   getProductDetail
 } = require('../controller/c_product')
 
-router.get('/', getProduct)
+router.get('/', authorization, getProduct)
 router.get('/:id', getProductById)
 router.get('/detail/:id', getProductDetail)
 router.post('/', postProduct)
