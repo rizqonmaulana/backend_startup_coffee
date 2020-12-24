@@ -19,7 +19,7 @@ router.get('/', isLogin, isAdmin, getProductRedis, getProduct)
 router.get('/:id', getProductByIdRedis, getProductById)
 router.get('/detail/:id', getProductDetail)
 router.post('/', uploadImage, postProduct)
-router.patch('/:id', clearDataProductRedis, patchProduct)
+router.patch('/:id', clearDataProductRedis, uploadImage, patchProduct)
 router.delete('/:id', deleteProduct)
 
 module.exports = router

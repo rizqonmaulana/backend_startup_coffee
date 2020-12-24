@@ -17,6 +17,7 @@ const helper = require('../helper/response')
 const qs = require('querystring')
 const redis = require('redis')
 const client = redis.createClient()
+const fs = require('fs')
 
 module.exports = {
   getProduct: async (request, response) => {
@@ -44,9 +45,6 @@ module.exports = {
         page < totalPage
           ? qs.stringify({ ...request.query, ...{ page: page + 1 } })
           : null
-
-      console.log(request.query)
-      console.log(qs.stringify(request.query))
 
       const pageInfo = {
         page,
@@ -169,7 +167,6 @@ module.exports = {
         product_created_at: new Date()
       }
 
-      console.log(setData)
       const result = await postProductModel(setData)
       return helper.response(response, 200, 'Success Post Product', result)
     } catch (error) {
@@ -182,7 +179,6 @@ module.exports = {
       const {
         productName,
         productPrice,
-        productPic,
         productDesc,
         productStartHour,
         productEndHour,
@@ -216,10 +212,24 @@ module.exports = {
         delivery_take_away: deliveryTakeAway
       }
 
+      let newPic
+
+      const product = await getProductByIdModel(id)
+
+      if (request.file === undefined) {
+        newPic = product[0].product_pic
+      } else {
+        newPic = request.file.filename
+        fs.unlink(`./uploads/${product[0].product_pic}`, function (err) {
+          if (err) throw err
+          console.log('File deleted!')
+        })
+      }
+
       const setData = {
         product_name: productName,
         product_price: productPrice,
-        product_pic: productPic,
+        product_pic: newPic,
         product_desc: productDesc,
         product_start_hour: productStartHour,
         product_end_hour: productEndHour,
@@ -271,6 +281,10 @@ module.exports = {
 
       const checkId = await getProductByIdModel(id)
       if (checkId.length > 0) {
+        fs.unlink(`./uploads/${checkId[0].product_pic}`, function (err) {
+          if (err) throw err
+          console.log('File deleted!')
+        })
         const result = await deleteProductModel(id)
         return helper.response(
           response,
