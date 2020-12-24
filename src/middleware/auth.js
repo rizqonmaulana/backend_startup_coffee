@@ -2,8 +2,7 @@ const jwt = require('jsonwebtoken')
 const helper = require('../helper/response')
 
 module.exports = {
-  authorization: (request, response, next) => {
-    console.log(request.headers.authorization)
+  isLogin: (request, response, next) => {
     let token = request.headers.authorization
     // proses 1 check apakah headers dimasukkan ?
     if (token) {
@@ -17,13 +16,21 @@ module.exports = {
           console.log(error)
           return helper.response(response, 400, error.message)
         } else {
-          console.log(result)
           request.token = result
           next()
         }
       })
     } else {
       return helper.response(response, 400, 'Please login first !')
+    }
+  },
+  isAdmin: (request, response, next) => {
+    const userData = request.token
+
+    if (userData.userRole !== 1) {
+      return helper.response(response, 400, 'Your are not allowed to access this page')
+    } else {
+      next()
     }
   }
 }
