@@ -6,7 +6,6 @@ const storage = multer.diskStorage({
     cb(null, './uploads')
   },
   filename: function (req, file, cb) {
-    console.log(file)
     cb(null, new Date().toISOString().replace(/:/g, '-') + file.originalname)
   }
 })
@@ -19,8 +18,11 @@ const fileFilter = (req, file, cb) => {
   }
 }
 
-// kondisi limit
-const upload = multer({ storage, fileFilter }).single('productPic')
+const upload = multer({
+  storage,
+  limits: { fileSize: 2000000 },
+  fileFilter
+}).single('productPic')
 
 const uploadFilter = (req, res, next) => {
   upload(req, res, function (err) {
@@ -31,8 +33,8 @@ const uploadFilter = (req, res, next) => {
       // An unknown error occurred when uploading.
       return helper.response(res, 400, err.message)
     }
-    next()
     // Everything went fine.
+    next()
   })
 }
 
