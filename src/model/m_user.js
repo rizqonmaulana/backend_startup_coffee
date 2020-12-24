@@ -18,21 +18,44 @@ module.exports = {
       })
     })
   },
-  updateUserModel: (setData, userEmail) => {
+  getUserModel: (email) => {
+    return new Promise((resolve, reject) => {
+      connection.query(
+        `SELECT * FROM user WHERE user_email = '${email}'`,
+        (error, result) => {
+          if (!error) {
+            resolve(result)
+          } else {
+            reject(error)
+          }
+        }
+      )
+    })
+  },
+  updatePasswordModel: (password, email) => {
+    return new Promise((resolve, reject) => {
+      connection.query(
+        `UPDATE user SET user_password = '${password}' WHERE user_email = '${email}'`,
+        (error, result) => {
+          if (!error) {
+            resolve(result)
+          } else {
+            reject(error)
+          }
+        }
+      )
+    })
+  },
+  updateUserModel: (setData, email) => {
     return new Promise((resolve, reject) => {
       console.log(
         connection.query(
           'UPDATE user SET ? WHERE user_email = ?',
-          setData,
-          userEmail,
+          [setData, email],
           (error, result) => {
             if (!error) {
-              console.log(result)
-              console.log(error)
-              resolve(result)
+              resolve(setData)
             } else {
-              console.log(result)
-              console.log(error)
               reject(new Error(error))
             }
           }

@@ -5,7 +5,9 @@ const helper = require('../helper/response')
 const {
   registerUserModel,
   checkEmailModel,
-  updateUserModel
+  updateUserModel,
+  updatePasswordModel,
+  getUserModel
 } = require('../model/m_user')
 
 module.exports = {
@@ -59,13 +61,46 @@ module.exports = {
       return helper.response(response, 400, 'Bad Request', error)
     }
   },
+  getUser: async (request, response) => {
+    try {
+      const { email } = request.params
+      const result = await getUserModel(email)
+      return helper.response(response, 200, 'Success Register User', result)
+    } catch (error) {
+      return helper.response(response, 400, 'Bad Request', error)
+    }
+  },
+  updatePassword: async (request, response) => {
+    try {
+      const { email } = request.params
+      const { userPassword } = request.body
+
+      const salt = bcrypt.genSaltSync(10)
+      const encryptPassword = bcrypt.hashSync(userPassword, salt)
+
+      const getEmail = await getUserModel(email)
+
+      if (getEmail.length > 0) {
+        const result = await updatePasswordModel(encryptPassword, email)
+        return helper.response(
+          response,
+          200,
+          `Success updated password ${email}`,
+          result
+        )
+      } else {
+        return helper.response(response, 400, 'email tidak ada')
+      }
+    } catch (error) {
+      return helper.response(response, 400, 'Bad Request', error)
+    }
+  },
   updateUser: async (request, response) => {
     try {
+      const { email } = request.params
+
       const {
         userName,
-        userEmail,
-        userPassword,
-        userRole,
         userPhone,
         userAddress,
         userFirstName,
@@ -74,14 +109,8 @@ module.exports = {
         userGender
       } = request.body
 
-      const salt = bcrypt.genSaltSync(10)
-      const encryptPassword = bcrypt.hashSync(userPassword, salt)
-
       const setData = {
         user_name: userName,
-        user_email: userEmail,
-        user_password: encryptPassword,
-        user_role: userRole,
         user_phone: userPhone,
         user_address: userAddress,
         user_first_name: userFirstName,
@@ -91,11 +120,14 @@ module.exports = {
         user_updated_at: new Date()
       }
 
-      console.log(setData)
-      console.log(userEmail)
-      const result = await updateUserModel(setData, userEmail)
+      const result = await updateUserModel(setData, email)
 
-      return helper.response(response, 200, 'Success Register User', result)
+      return helper.response(
+        response,
+        200,
+        `Success Update user ${email}`,
+        result
+      )
     } catch (error) {
       return helper.response(response, 400, 'Bad Request', error)
     }
