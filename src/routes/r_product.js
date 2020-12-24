@@ -1,5 +1,11 @@
 const router = require('express').Router()
-const { authorization } = require('../middleware/auth')
+const uploadImage = require('../middleware/multer')
+const { isLogin, isAdmin } = require('../middleware/auth')
+const {
+  getProductByIdRedis,
+  getProductRedis,
+  clearDataProductRedis
+} = require('../middleware/redis')
 const {
   getProduct,
   getProductById,
@@ -9,11 +15,11 @@ const {
   getProductDetail
 } = require('../controller/c_product')
 
-router.get('/', authorization, getProduct)
-router.get('/:id', getProductById)
+router.get('/', isLogin, isAdmin, getProductRedis, getProduct)
+router.get('/:id', getProductByIdRedis, getProductById)
 router.get('/detail/:id', getProductDetail)
-router.post('/', postProduct)
-router.patch('/:id', patchProduct)
+router.post('/', uploadImage, postProduct)
+router.patch('/:id', clearDataProductRedis, patchProduct)
 router.delete('/:id', deleteProduct)
 
 module.exports = router

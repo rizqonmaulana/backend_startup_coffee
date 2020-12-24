@@ -15,6 +15,8 @@ const { postSizeModel, patchSizeModel } = require('../model/m_size')
 const { postDeliveryModel, patchDeliveryModel } = require('../model/m_delivery')
 const helper = require('../helper/response')
 const qs = require('querystring')
+const redis = require('redis')
+const client = redis.createClient()
 
 module.exports = {
   getProduct: async (request, response) => {
@@ -72,6 +74,16 @@ module.exports = {
         result = await sortProductModel(sortBy, sortType, limit, offset)
       } else {
         result = await getProductModel(limit, offset)
+
+        const newData = {
+          result,
+          pageInfo
+        }
+        client.setex(
+          `getproduct:${JSON.stringify(request.query)}`,
+          3600,
+          JSON.stringify(newData)
+        )
       }
 
       return helper.response(
@@ -90,6 +102,7 @@ module.exports = {
       const { id } = request.params
       const result = await getProductByIdModel(id)
       if (result.length > 0) {
+        client.setex(`getproductbyid:${id}`, 3600, JSON.stringify(result))
         return helper.response(
           response,
           200,
@@ -108,7 +121,6 @@ module.exports = {
       const {
         productName,
         productPrice,
-        productPic,
         productDesc,
         productStartHour,
         productEndHour,
@@ -146,7 +158,7 @@ module.exports = {
       const setData = {
         product_name: productName,
         product_price: productPrice,
-        product_pic: productPic,
+        product_pic: request.file === undefined ? '' : request.file.filename,
         product_desc: productDesc,
         product_start_hour: productStartHour,
         product_end_hour: productEndHour,
@@ -157,8 +169,8 @@ module.exports = {
         product_created_at: new Date()
       }
 
+      console.log(setData)
       const result = await postProductModel(setData)
-
       return helper.response(response, 200, 'Success Post Product', result)
     } catch (error) {
       return helper.response(response, 400, 'Bad Request', error)
