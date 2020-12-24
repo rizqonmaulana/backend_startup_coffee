@@ -15,11 +15,25 @@ const {
   getProductDetail
 } = require('../controller/c_product')
 
-router.get('/', isLogin, isAdmin, getProductRedis, getProduct)
+router.get('/', getProductRedis, getProduct)
 router.get('/:id', getProductByIdRedis, getProductById)
 router.get('/detail/:id', getProductDetail)
-router.post('/', uploadImage, postProduct)
-router.patch('/:id', clearDataProductRedis, uploadImage, patchProduct)
-router.delete('/:id', deleteProduct)
+router.post(
+  '/',
+  isLogin,
+  isAdmin,
+  clearDataProductRedis,
+  uploadImage,
+  postProduct
+)
+router.patch(
+  '/:id',
+  isLogin,
+  isAdmin,
+  clearDataProductRedis,
+  uploadImage,
+  patchProduct
+)
+router.delete('/:id', isLogin, isAdmin, clearDataProductRedis, deleteProduct)
 
 module.exports = router

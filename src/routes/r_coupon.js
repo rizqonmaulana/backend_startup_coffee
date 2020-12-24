@@ -6,11 +6,12 @@ const {
   patchCoupon,
   deleteCoupon
 } = require('../controller/c_coupon')
+const { isLogin, isAdmin } = require('../middleware/auth')
 
 router.get('/', getCoupon)
 router.get('/:id', getCouponById)
-router.post('/', postCoupon)
-router.patch('/:id', patchCoupon)
-router.delete('/:id', deleteCoupon)
+router.post('/', isLogin, isAdmin, postCoupon)
+router.patch('/:id', isLogin, isAdmin, patchCoupon)
+router.delete('/:id', isLogin, isAdmin, deleteCoupon)
 
 module.exports = router
