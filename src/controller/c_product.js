@@ -232,7 +232,6 @@ module.exports = {
       }
 
       let newPic
-
       const product = await getProductByIdModel(id)
 
       if (request.file === undefined) {
