@@ -21,7 +21,7 @@ module.exports = {
   getUserModel: (email) => {
     return new Promise((resolve, reject) => {
       connection.query(
-        `SELECT user_id, user_name, user_email, 
+        `SELECT user_id, user_name, user_email, user_pic,
         user_phone, user_address, user_first_name, 
         user_last_name, user_dob, user_gender FROM 
         user WHERE user_email = '${email}'`,

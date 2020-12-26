@@ -3,6 +3,7 @@ const jwt = require('jsonwebtoken')
 const helper = require('../helper/response')
 const redis = require('redis')
 const client = redis.createClient()
+const fs = require('fs')
 
 const {
   registerUserModel,
@@ -19,7 +20,6 @@ module.exports = {
         userName,
         userEmail,
         userPassword,
-        userRole,
         userPhone,
         userAddress,
         userFirstName,
@@ -34,8 +34,9 @@ module.exports = {
       const setData = {
         user_name: userName,
         user_email: userEmail,
+        user_pic: request.file === undefined ? '' : request.file.filename,
         user_password: encryptPassword,
-        user_role: userRole,
+        user_role: 0,
         user_phone: userPhone,
         user_address: userAddress,
         user_first_name: userFirstName,
@@ -112,8 +113,22 @@ module.exports = {
         userGender
       } = request.body
 
+      let newPic
+      const user = await getUserModel(email)
+
+      if (request.file === undefined) {
+        newPic = user[0].user_pic
+      } else {
+        newPic = request.file.filename
+        fs.unlink(`./uploads/${user[0].user_pic}`, function (err) {
+          if (err) throw err
+          console.log('File deleted!')
+        })
+      }
+
       const setData = {
         user_name: userName,
+        user_pic: newPic,
         user_phone: userPhone,
         user_address: userAddress,
         user_first_name: userFirstName,
@@ -140,7 +155,6 @@ module.exports = {
       const { userEmail, userPassword } = request.body
       // proses 1 : apakah email ada di db ?
       const checkUserData = await checkEmailModel(userEmail)
-      console.log('ini chekuserdata' + checkUserData)
 
       if (checkUserData.length > 0) {
         // proses 2 : apakah password benar ?
