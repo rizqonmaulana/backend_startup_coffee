@@ -1,26 +1,28 @@
 const {
-  getOrderModel,
-  getOrderDetailModel,
+  getOrderByUserIdModel,
+  getOrderByInvoiceModel,
   postOrderModel,
   deleteOrderModel,
-  getOrderByIdModel,
-  getOrderHistoryModel
+  getOrderDetailHistoryModel
 } = require('../model/m_order')
 const {
   postOrderDetailModel,
-  deleteOrderDetailModel,
-  deleteOrderDetailByIdModel
+  deleteOrderDetailModel
 } = require('../model/m_order_detail')
 const { getCouponByCodeModel } = require('../model/m_coupon')
 const helper = require('../helper/response')
+const redis = require('redis')
+const client = redis.createClient()
 
 module.exports = {
-  getOrder: async (request, response) => {
+  getOrderByUserId: async (request, response) => {
     try {
       const { customerId } = request.params
-      const result = await getOrderModel(customerId)
+      const result = await getOrderByUserIdModel(customerId)
+      console.log(result)
 
       if (result.length > 0) {
+        client.setex(`getorderuser:${customerId}`, 3600, JSON.stringify(result))
         return helper.response(
           response,
           200,
@@ -32,6 +34,64 @@ module.exports = {
           response,
           404,
           `Order history by customer id : ${customerId} Not Found`
+        )
+      }
+    } catch (error) {
+      return helper.response(response, 400, 'Bad Request', error)
+    }
+  },
+  getOrderByInvoice: async (request, response) => {
+    try {
+      const { invoice } = request.params
+      console.log(invoice)
+      const result = await getOrderByInvoiceModel(invoice)
+
+      if (result.length > 0) {
+        client.setex(
+          `getorderbyinvoice:${invoice}`,
+          3600,
+          JSON.stringify(result)
+        )
+        return helper.response(
+          response,
+          200,
+          `Success get order by invoice : ${invoice}`,
+          result
+        )
+      } else {
+        return helper.response(
+          response,
+          404,
+          `Order by invoice : ${invoice} Not Found`
+        )
+      }
+    } catch (error) {
+      return helper.response(response, 400, 'Bad Request', error)
+    }
+  },
+  getOrderDetailHistory: async (request, response) => {
+    try {
+      const { customerId } = request.params
+      const result = await getOrderDetailHistoryModel(customerId)
+
+      if (result.length > 0) {
+        client.setex(
+          `getorderdetailbyuserid:${customerId}`,
+          3600,
+          JSON.stringify(result)
+        )
+
+        return helper.response(
+          response,
+          200,
+          `Success get history by user id : ${customerId}`,
+          result
+        )
+      } else {
+        return helper.response(
+          response,
+          404,
+          `Order history by user id : ${customerId} Not Found`
         )
       }
     } catch (error) {
@@ -85,9 +145,6 @@ module.exports = {
             afterDiscount = orderTotal
           }
 
-          // console.log(afterDiscount)
-          // console.log(discount)
-
           const setData = {
             order_invoice: orderInvoice,
             order_payment_method: orderPaymentMethod,
@@ -133,79 +190,26 @@ module.exports = {
   },
   deleteOrder: async (request, response) => {
     try {
-      const { id } = request.params
-      const checkId = await getOrderByIdModel(id)
-
-      if (checkId.length > 0) {
-        const orderId = checkId[0].order_id
-        const result = await deleteOrderModel(id)
+      const { invoice } = request.params
+      const checkInvoice = await getOrderByInvoiceModel(invoice)
+      if (checkInvoice.length > 0) {
+        const orderId = checkInvoice[0].order_id
+        console.log(orderId)
+        const result = await deleteOrderModel(invoice)
         await deleteOrderDetailModel(orderId)
         return helper.response(
           response,
           200,
-          `Success delete order by id : ${id}`,
-          result
-        )
-      } else {
-        return helper.response(response, 404, `Product By Id : ${id} Not Found`)
-      }
-    } catch (error) {
-      return helper.response(response, 400, 'Bad Request', error)
-    }
-  },
-  getOrderDetail: async (request, response) => {
-    try {
-      const { invoice } = request.params
-      console.log(invoice)
-      const result = await getOrderDetailModel(invoice)
-
-      if (result.length > 0) {
-        return helper.response(
-          response,
-          200,
-          `Success get order by invoice : ${invoice}`,
+          `Success delete order by invoice : ${invoice}`,
           result
         )
       } else {
         return helper.response(
           response,
           404,
-          `Order by invoice : ${invoice} Not Found`
+          `Product By Id : ${invoice} Not Found`
         )
       }
-    } catch (error) {
-      return helper.response(response, 400, 'Bad Request', error)
-    }
-  },
-  getOrderHistory: async (request, response) => {
-    try {
-      const { customerId } = request.params
-      console.log(customerId)
-      const result = await getOrderHistoryModel(customerId)
-
-      if (result.length > 0) {
-        return helper.response(
-          response,
-          200,
-          `Success get history by user id : ${customerId}`,
-          result
-        )
-      } else {
-        return helper.response(
-          response,
-          404,
-          `Order history by user id : ${customerId} Not Found`
-        )
-      }
-    } catch (error) {
-      return helper.response(response, 400, 'Bad Request', error)
-    }
-  },
-  deleteOrderDetailById: async (request, response) => {
-    try {
-      const { id } = request.params
-      const result = await deleteOrderDetailByIdModel(id)
-      return helper.response(response, 200, 'Success delete order', result)
     } catch (error) {
       return helper.response(response, 400, 'Bad Request', error)
     }

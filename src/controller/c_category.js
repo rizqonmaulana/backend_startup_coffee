@@ -4,6 +4,8 @@ const {
 } = require('../model/m_category')
 const helper = require('../helper/response')
 const qs = require('querystring')
+const redis = require('redis')
+const client = redis.createClient()
 
 module.exports = {
   getProductByCategory: async (request, response) => {
@@ -24,8 +26,7 @@ module.exports = {
         page < totalPage
           ? qs.stringify({ ...request.query, ...{ page: page + 1 } })
           : null // page=...&limit=...
-      console.log(request.query)
-      console.log(qs.stringify(request.query))
+
       const pageInfo = {
         page,
         totalPage,
@@ -44,6 +45,18 @@ module.exports = {
         limit,
         offset
       )
+
+      // redis
+      const newData = {
+        result,
+        pageInfo
+      }
+      client.setex(
+        `getproductbycategory:${categoryName}${JSON.stringify(request.query)}`,
+        3600,
+        JSON.stringify(newData)
+      )
+
       return helper.response(
         response,
         200,

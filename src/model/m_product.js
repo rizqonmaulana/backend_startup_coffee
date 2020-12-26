@@ -18,8 +18,6 @@ module.exports = {
         `SELECT * FROM product WHERE product_name LIKE '%${search}%' LIMIT ${limit} OFFSET ${offset}`,
         (error, result) => {
           !error ? resolve(result) : reject(new Error(error))
-          console.log(result)
-          console.log(error)
         }
       )
     })
@@ -94,13 +92,11 @@ module.exports = {
   },
   sortProductModel: (sortBy, sortType, limit, offset) => {
     return new Promise((resolve, reject) => {
-      console.log(
-        connection.query(
-          `SELECT * FROM product ORDER BY ${sortBy} ${sortType} LIMIT ${limit} OFFSET ${offset}`,
-          (error, result) => {
-            !error ? resolve(result) : reject(new Error(error))
-          }
-        )
+      connection.query(
+        `SELECT * FROM product ORDER BY ${sortBy} ${sortType} LIMIT ${limit} OFFSET ${offset}`,
+        (error, result) => {
+          !error ? resolve(result) : reject(new Error(error))
+        }
       )
     })
   },
@@ -117,27 +113,21 @@ module.exports = {
   },
   getProductBySearchAndSortModel: (search, sortBy, sortType, limit, offset) => {
     return new Promise((resolve, reject) => {
-      console.log(
-        connection.query(
-          `SELECT * FROM product WHERE product_name LIKE '%${search}%' ORDER BY ${sortBy} ${sortType} LIMIT ${limit} OFFSET ${offset}`,
-          (error, result) => {
-            !error ? resolve(result) : reject(new Error(error))
-            console.log(result)
-            console.log(error)
-          }
-        )
+      connection.query(
+        `SELECT * FROM product WHERE product_name LIKE '%${search}%' ORDER BY ${sortBy} ${sortType} LIMIT ${limit} OFFSET ${offset}`,
+        (error, result) => {
+          !error ? resolve(result) : reject(new Error(error))
+        }
       )
     })
   },
   getProductDetailModel: (id) => {
     return new Promise((resolve, reject) => {
-      console.log(
-        connection.query(
-          `SELECT product_id, product_name, product_price, product_pic, product_desc, product_start_hour, product_end_hour, product_qty,category_id, product.size_id, product.delivery_id, size_regular, size_large, size_extra_large, size_250gr, size_300gr, size_500gr, delivery_home, delivery_dine_in, delivery_take_away  FROM product JOIN size on product.size_id = size.size_id JOIN delivery on product.delivery_id = delivery.delivery_id WHERE product_id = ${id}`,
-          (error, result) => {
-            !error ? resolve(result) : reject(new Error(error))
-          }
-        )
+      connection.query(
+        `SELECT product_id, product_name, product_price, product_pic, product_desc, product_start_hour, product_end_hour, product_qty,category_id, product.size_id, product.delivery_id, size_regular, size_large, size_extra_large, size_250gr, size_300gr, size_500gr, delivery_home, delivery_dine_in, delivery_take_away  FROM product JOIN size on product.size_id = size.size_id JOIN delivery on product.delivery_id = delivery.delivery_id WHERE product_id = ${id}`,
+        (error, result) => {
+          !error ? resolve(result) : reject(new Error(error))
+        }
       )
     })
   }

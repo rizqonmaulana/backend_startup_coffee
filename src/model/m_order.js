@@ -1,7 +1,7 @@
 const connection = require('../config/mysql')
 
 module.exports = {
-  getOrderModel: (customerId) => {
+  getOrderByUserIdModel: (customerId) => {
     return new Promise((resolve, reject) => {
       connection.query(
         `SELECT * FROM orders WHERE customer_id = ${customerId}`,
@@ -11,20 +11,10 @@ module.exports = {
       )
     })
   },
-  getOrderByIdModel: (id) => {
+  getOrderByInvoiceModel: (invoice) => {
     return new Promise((resolve, reject) => {
       connection.query(
-        `SELECT * FROM orders WHERE order_id = ${id}`,
-        (error, result) => {
-          !error ? resolve(result) : reject(new Error(error))
-        }
-      )
-    })
-  },
-  getOrderDetailModel: (invoice) => {
-    return new Promise((resolve, reject) => {
-      connection.query(
-        `SELECT order_invoice, order_payment_method, order_total, 
+        `SELECT orders.order_id, order_invoice, order_payment_method, order_total, 
           customer_id, product_name, order_detail_delivery, order_detail_size, 
           order_detail_qty, order_detail_price, order_created_at FROM orders 
           JOIN order_detail ON orders.order_id = order_detail.order_id JOIN 
@@ -36,7 +26,7 @@ module.exports = {
       )
     })
   },
-  getOrderHistoryModel: (customerId) => {
+  getOrderDetailHistoryModel: (customerId) => {
     return new Promise((resolve, reject) => {
       connection.query(
         `SELECT orders.order_id, product.product_id, order_detail.order_detail_id, 
@@ -65,10 +55,10 @@ module.exports = {
       })
     })
   },
-  deleteOrderModel: (id) => {
+  deleteOrderModel: (invoice) => {
     return new Promise((resolve, reject) => {
       connection.query(
-        `DELETE FROM orders WHERE order_id = ${id}`,
+        `DELETE FROM orders WHERE order_invoice = ${invoice}`,
         (error, result) => {
           !error ? resolve(result) : reject(new Error(error))
         }

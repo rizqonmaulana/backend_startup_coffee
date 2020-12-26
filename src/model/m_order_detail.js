@@ -29,15 +29,5 @@ module.exports = {
         }
       )
     })
-  },
-  deleteOrderDetailByIdModel: (id) => {
-    return new Promise((resolve, reject) => {
-      connection.query(
-        `DELETE FROM order_detail WHERE order_detail_id = ${id}`,
-        (error, result) => {
-          !error ? resolve(result) : reject(new Error(error))
-        }
-      )
-    })
   }
 }

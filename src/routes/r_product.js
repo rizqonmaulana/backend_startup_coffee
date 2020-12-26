@@ -4,6 +4,7 @@ const { isLogin, isAdmin } = require('../middleware/auth')
 const {
   getProductByIdRedis,
   getProductRedis,
+  getProductDetaildRedis,
   clearDataProductRedis
 } = require('../middleware/redis')
 const {
@@ -17,7 +18,7 @@ const {
 
 router.get('/', getProductRedis, getProduct)
 router.get('/:id', getProductByIdRedis, getProductById)
-router.get('/detail/:id', getProductDetail)
+router.get('/detail/:id', getProductDetaildRedis, getProductDetail)
 router.post(
   '/',
   isLogin,

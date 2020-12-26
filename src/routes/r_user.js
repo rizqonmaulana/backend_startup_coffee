@@ -7,11 +7,12 @@ const {
   updatePassword
 } = require('../controller/c_user')
 const { isLogin } = require('../middleware/auth')
+const { getUserRedis, clearUserRedis } = require('../middleware/redis')
 
-router.get('/:email', getUser)
+router.get('/:email', isLogin, getUserRedis, getUser)
 router.post('/register', registerUser)
 router.post('/login', loginUser)
-router.patch('/update/:email', isLogin, updateUser)
-router.patch('/update/password/:email', updatePassword)
+router.patch('/update/:email', isLogin, clearUserRedis, updateUser)
+router.patch('/update/password/:email', isLogin, clearUserRedis, updatePassword)
 
 module.exports = router

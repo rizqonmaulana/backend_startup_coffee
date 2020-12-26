@@ -55,9 +55,8 @@ module.exports = {
         prevLink: prevLink && `http://localhost:3000/product?${prevLink}`
       }
 
-      let result
-
       // decide result model to use
+      let result
       if (search && sortBy && sortType) {
         result = await getProductBySearchAndSortModel(
           search,
@@ -72,17 +71,18 @@ module.exports = {
         result = await sortProductModel(sortBy, sortType, limit, offset)
       } else {
         result = await getProductModel(limit, offset)
-
-        const newData = {
-          result,
-          pageInfo
-        }
-        client.setex(
-          `getproduct:${JSON.stringify(request.query)}`,
-          3600,
-          JSON.stringify(newData)
-        )
       }
+
+      // redis
+      const newData = {
+        result,
+        pageInfo
+      }
+      client.setex(
+        `getproduct:${JSON.stringify(request.query)}`,
+        3600,
+        JSON.stringify(newData)
+      )
 
       return helper.response(
         response,
@@ -101,6 +101,25 @@ module.exports = {
       const result = await getProductByIdModel(id)
       if (result.length > 0) {
         client.setex(`getproductbyid:${id}`, 3600, JSON.stringify(result))
+        return helper.response(
+          response,
+          200,
+          `Success Get Product By Id ${id}`,
+          result
+        )
+      } else {
+        return helper.response(response, 404, `Product By Id : ${id} Not Found`)
+      }
+    } catch (error) {
+      return helper.response(response, 400, 'Bad Request', error)
+    }
+  },
+  getProductDetail: async (request, response) => {
+    try {
+      const { id } = request.params
+      const result = await getProductDetailModel(id)
+      if (result.length > 0) {
+        client.setex(`getproductdetail:${id}`, 3600, JSON.stringify(result))
         return helper.response(
           response,
           200,
@@ -250,24 +269,6 @@ module.exports = {
         await patchDeliveryModel(setDataDelivery, getDeliveryId)
         const result = await patchProductModel(setData, id)
         return helper.response(response, 200, 'Success Post Product', result)
-      } else {
-        return helper.response(response, 404, `Product By Id : ${id} Not Found`)
-      }
-    } catch (error) {
-      return helper.response(response, 400, 'Bad Request', error)
-    }
-  },
-  getProductDetail: async (request, response) => {
-    try {
-      const { id } = request.params
-      const result = await getProductDetailModel(id)
-      if (result.length > 0) {
-        return helper.response(
-          response,
-          200,
-          `Success Get Product By Id ${id}`,
-          result
-        )
       } else {
         return helper.response(response, 404, `Product By Id : ${id} Not Found`)
       }

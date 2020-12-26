@@ -8,6 +8,8 @@ const {
 } = require('../model/m_coupon')
 const helper = require('../helper/response')
 const qs = require('querystring')
+const redis = require('redis')
+const client = redis.createClient()
 
 module.exports = {
   getCoupon: async (request, response) => {
@@ -39,6 +41,18 @@ module.exports = {
       }
 
       const result = await getCouponModel(limit, offset)
+
+      // redis
+      const newData = {
+        result,
+        pageInfo
+      }
+      client.setex(
+        `getcoupon:${JSON.stringify(request.query)}`,
+        3600,
+        JSON.stringify(newData)
+      )
+
       return helper.response(
         response,
         200,
@@ -55,6 +69,7 @@ module.exports = {
       const { id } = request.params
       const result = await getCouponByIdModel(id)
       if (result.length > 0) {
+        client.setex(`getcouponbyid:${id}`, 3600, JSON.stringify(result))
         return helper.response(
           response,
           200,

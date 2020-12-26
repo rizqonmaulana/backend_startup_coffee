@@ -3,13 +3,11 @@ const connection = require('../config/mysql')
 module.exports = {
   getProductByCategoryModel: (categoryName, limit, offset) => {
     return new Promise((resolve, reject) => {
-      console.log(
-        connection.query(
-          `SELECT * FROM product JOIN category ON product.category_id = category.category_id WHERE category.category_name = '${categoryName}' LIMIT ${limit} OFFSET ${offset}`,
-          (error, result) => {
-            !error ? resolve(result) : reject(new Error(error))
-          }
-        )
+      connection.query(
+        `SELECT * FROM product JOIN category ON product.category_id = category.category_id WHERE category.category_name = '${categoryName}' LIMIT ${limit} OFFSET ${offset}`,
+        (error, result) => {
+          !error ? resolve(result) : reject(new Error(error))
+        }
       )
     })
   },

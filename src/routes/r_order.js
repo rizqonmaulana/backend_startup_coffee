@@ -1,19 +1,33 @@
 const router = require('express').Router()
 const {
-  getOrder,
-  getOrderDetail,
-  getOrderHistory,
+  getOrderByUserId,
+  getOrderByInvoice,
+  getOrderDetailHistory,
   postOrder,
-  deleteOrder,
-  deleteOrderDetailById
+  deleteOrder
 } = require('../controller/c_order')
 const { isLogin } = require('../middleware/auth')
+const {
+  getOrderByUserIdRedis,
+  getOrderDetailByUserIdRedis,
+  getOrderByInvoiceRedis,
+  clearOrderByIdRedis
+} = require('../middleware/redis')
 
-router.get('/:customerId', isLogin, getOrder)
-router.get('/invoice/:invoice', isLogin, getOrderDetail)
-router.get('/history/:customerId', isLogin, getOrderHistory)
-router.post('/', isLogin, postOrder)
-router.delete('/:id', isLogin, deleteOrder)
-router.delete('/history/:id', isLogin, deleteOrderDetailById)
+router.get('/:customerId', isLogin, getOrderByUserIdRedis, getOrderByUserId)
+router.get(
+  '/history/:customerId',
+  isLogin,
+  getOrderDetailByUserIdRedis,
+  getOrderDetailHistory
+)
+router.get(
+  '/invoice/:invoice',
+  isLogin,
+  getOrderByInvoiceRedis,
+  getOrderByInvoice
+)
+router.post('/', isLogin, clearOrderByIdRedis, postOrder)
+router.delete('/:invoice', isLogin, clearOrderByIdRedis, deleteOrder)
 
 module.exports = router
