@@ -2,6 +2,7 @@ const {
   getOrderByUserIdModel,
   getOrderByInvoiceModel,
   getOrderAdminModel,
+  getOrderYearIncomeModel,
   postOrderModel,
   patchOrderModel,
   deleteOrderModel,
@@ -106,6 +107,19 @@ module.exports = {
         response,
         200,
         'Success get order for admin',
+        result
+      )
+    } catch (error) {
+      return helper.response(response, 400, 'Bad Request', error)
+    }
+  },
+  getOrderYearIncome: async (_request, response) => {
+    try {
+      const result = await getOrderYearIncomeModel()
+      return helper.response(
+        response,
+        200,
+        'Success get order year income',
         result
       )
     } catch (error) {

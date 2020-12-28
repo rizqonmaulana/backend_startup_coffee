@@ -4,6 +4,7 @@ const {
   getOrderByInvoice,
   getOrderDetailHistory,
   getOrderAdmin,
+  getOrderYearIncome,
   patchOrder,
   postOrder,
   deleteOrder
@@ -35,6 +36,7 @@ router.get(
   getOrderByInvoice
 )
 router.get('/list/admin', getOrderAdmin)
+router.get('/year/income', getOrderYearIncome)
 router.post(
   '/',
   // isLogin,

@@ -50,6 +50,16 @@ module.exports = {
       )
     })
   },
+  getOrderYearIncomeModel: () => {
+    return new Promise((resolve, reject) => {
+      connection.query(
+        'SELECT SUM(order_total) AS total_price FROM orders WHERE YEAR(order_created_at) = YEAR(NOW())',
+        (error, result) => {
+          !error ? resolve(result) : reject(new Error(error))
+        }
+      )
+    })
+  },
   postOrderModel: (setData) => {
     return new Promise((resolve, reject) => {
       connection.query('INSERT INTO orders SET ?', setData, (error, result) => {
