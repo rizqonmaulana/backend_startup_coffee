@@ -40,6 +40,16 @@ module.exports = {
       )
     })
   },
+  getOrderAdminModel: () => {
+    return new Promise((resolve, reject) => {
+      connection.query(
+        'SELECT * FROM orders WHERE order_status = 0',
+        (error, result) => {
+          !error ? resolve(result) : reject(new Error(error))
+        }
+      )
+    })
+  },
   postOrderModel: (setData) => {
     return new Promise((resolve, reject) => {
       connection.query('INSERT INTO orders SET ?', setData, (error, result) => {
@@ -53,6 +63,20 @@ module.exports = {
           reject(new Error(error))
         }
       })
+    })
+  },
+  patchOrderModel: (invoice) => {
+    return new Promise((resolve, reject) => {
+      connection.query(
+        `UPDATE orders SET order_status = 1 WHERE order_invoice = ${invoice}`,
+        (error, result) => {
+          if (!error) {
+            resolve(result)
+          } else {
+            reject(new Error(error))
+          }
+        }
+      )
     })
   },
   deleteOrderModel: (invoice) => {

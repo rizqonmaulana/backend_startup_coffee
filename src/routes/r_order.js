@@ -3,10 +3,12 @@ const {
   getOrderByUserId,
   getOrderByInvoice,
   getOrderDetailHistory,
+  getOrderAdmin,
+  patchOrder,
   postOrder,
   deleteOrder
 } = require('../controller/c_order')
-const { isLogin } = require('../middleware/auth')
+// const { isLogin } = require('../middleware/auth')
 const {
   getOrderByUserIdRedis,
   getOrderDetailByUserIdRedis,
@@ -14,20 +16,37 @@ const {
   clearOrderByIdRedis
 } = require('../middleware/redis')
 
-router.get('/:customerId', isLogin, getOrderByUserIdRedis, getOrderByUserId)
+router.get(
+  '/:customerId',
+  // isLogin,
+  getOrderByUserIdRedis,
+  getOrderByUserId
+)
 router.get(
   '/history/:customerId',
-  isLogin,
+  // isLogin,
   getOrderDetailByUserIdRedis,
   getOrderDetailHistory
 )
 router.get(
   '/invoice/:invoice',
-  isLogin,
+  // isLogin,
   getOrderByInvoiceRedis,
   getOrderByInvoice
 )
-router.post('/', isLogin, clearOrderByIdRedis, postOrder)
-router.delete('/:invoice', isLogin, clearOrderByIdRedis, deleteOrder)
+router.get('/list/admin', getOrderAdmin)
+router.post(
+  '/',
+  // isLogin,
+  clearOrderByIdRedis,
+  postOrder
+)
+router.patch('/', patchOrder)
+router.delete(
+  '/:invoice',
+  // isLogin,
+  clearOrderByIdRedis,
+  deleteOrder
+)
 
 module.exports = router

@@ -1,6 +1,6 @@
 const router = require('express').Router()
 const uploadImage = require('../middleware/multer')
-const { isLogin, isAdmin } = require('../middleware/auth')
+// const { isLogin, isAdmin } = require('../middleware/auth')
 const {
   getProductByIdRedis,
   getProductRedis,
@@ -21,20 +21,26 @@ router.get('/:id', getProductByIdRedis, getProductById)
 router.get('/detail/:id', getProductDetaildRedis, getProductDetail)
 router.post(
   '/',
-  isLogin,
-  isAdmin,
+  // isLogin,
+  // isAdmin,
   clearDataProductRedis,
   uploadImage,
   postProduct
 )
 router.patch(
   '/:id',
-  isLogin,
-  isAdmin,
+  // isLogin,
+  // isAdmin,
   clearDataProductRedis,
   uploadImage,
   patchProduct
 )
-router.delete('/:id', isLogin, isAdmin, clearDataProductRedis, deleteProduct)
+router.delete(
+  '/:id',
+  // isLogin,
+  // isAdmin,
+  clearDataProductRedis,
+  deleteProduct
+)
 
 module.exports = router

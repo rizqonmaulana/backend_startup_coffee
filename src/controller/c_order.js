@@ -1,7 +1,9 @@
 const {
   getOrderByUserIdModel,
   getOrderByInvoiceModel,
+  getOrderAdminModel,
   postOrderModel,
+  patchOrderModel,
   deleteOrderModel,
   getOrderDetailHistoryModel
 } = require('../model/m_order')
@@ -9,7 +11,6 @@ const {
   postOrderDetailModel,
   deleteOrderDetailModel
 } = require('../model/m_order_detail')
-const { getCouponByCodeModel } = require('../model/m_coupon')
 const helper = require('../helper/response')
 const redis = require('redis')
 const client = redis.createClient()
@@ -98,57 +99,37 @@ module.exports = {
       return helper.response(response, 400, 'Bad Request', error)
     }
   },
+  getOrderAdmin: async (_request, response) => {
+    try {
+      const result = await getOrderAdminModel()
+      return helper.response(
+        response,
+        200,
+        'Success get order for admin',
+        result
+      )
+    } catch (error) {
+      return helper.response(response, 400, 'Bad Request', error)
+    }
+  },
   postOrder: async (request, response) => {
     try {
       const data = request.body
-      let i
       let result
-      let getDiscountPromo
-      let getStartPromo
-      let getEndPromo
-      let afterDiscount
-      let discount
 
-      for (i = 0; i < data.length; i++) {
+      for (let i = 0; i < data.length; i++) {
         if (i === 0) {
-          const {
-            orderPaymentMethod,
-            orderTotal,
-            customerId,
-            promoCode
-          } = data[0]
+          const { orderPaymentMethod, orderTotal, customerId } = data[0]
 
-          const dateNow = new Date()
           const getInvoice =
             Math.random() * (9999999999 - 100000000) + 100000000
           const orderInvoice = Math.ceil(getInvoice)
-          console.log(orderInvoice)
-
-          // is promo code valid ?
-          if (promoCode) {
-            const getCouponData = await getCouponByCodeModel(promoCode)
-            if (getCouponData.length > 0) {
-              getDiscountPromo = getCouponData[0].coupon_discount
-              getStartPromo = getCouponData[0].coupon_start_date
-              getEndPromo = getCouponData[0].coupon_end_date
-
-              if (dateNow >= getStartPromo && dateNow <= getEndPromo) {
-                discount = (orderTotal * getDiscountPromo) / 100
-                afterDiscount = orderTotal - discount
-              } else {
-                afterDiscount = orderTotal
-              }
-            } else {
-              afterDiscount = orderTotal
-            }
-          } else {
-            afterDiscount = orderTotal
-          }
 
           const setData = {
             order_invoice: orderInvoice,
             order_payment_method: orderPaymentMethod,
-            order_total: afterDiscount,
+            order_total: orderTotal,
+            order_status: 0,
             customer_id: customerId
           }
 
@@ -162,21 +143,13 @@ module.exports = {
             orderDetailPrice
           } = data[i]
 
-          // get discount ?
-          if (discount) {
-            discount = (orderDetailPrice * getDiscountPromo) / 100
-            afterDiscount = orderDetailPrice - discount
-          } else {
-            afterDiscount = orderDetailPrice
-          }
-
           const setDataOrderDetail = {
             order_id: result.order_id,
             product_id: productId,
             order_detail_delivery: orderDetailDelivery,
             order_detail_size: orderDetailSize,
             order_detail_qty: orderDetailQty,
-            order_detail_price: afterDiscount
+            order_detail_price: orderDetailPrice
           }
 
           await postOrderDetailModel(setDataOrderDetail)
@@ -184,6 +157,21 @@ module.exports = {
       }
 
       return helper.response(response, 200, 'Success post order', result)
+    } catch (error) {
+      return helper.response(response, 400, 'Bad Request', error)
+    }
+  },
+  patchOrder: async (request, response) => {
+    try {
+      const { invoice } = request.body
+      console.log(invoice)
+      const result = await patchOrderModel(invoice)
+      return helper.response(
+        response,
+        200,
+        'Success update order status',
+        result
+      )
     } catch (error) {
       return helper.response(response, 400, 'Bad Request', error)
     }
