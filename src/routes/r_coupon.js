@@ -2,6 +2,7 @@ const router = require('express').Router()
 const {
   getCoupon,
   getCouponById,
+  getCouponActive,
   postCoupon,
   patchCoupon,
   deleteCoupon
@@ -13,6 +14,7 @@ const {
   clearCouponRedis
 } = require('../middleware/redis')
 
+router.get('/active', getCouponActive)
 router.get('/', getCouponRedis, getCoupon)
 router.get('/:id', getCouponByIdRedis, getCouponById)
 router.post('/', isLogin, isAdmin, clearCouponRedis, postCoupon)

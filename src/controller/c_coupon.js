@@ -2,6 +2,7 @@ const {
   getCouponModel,
   getCouponByIdModel,
   getCouponCountModel,
+  getCouponActiveModel,
   postCouponModel,
   patchCouponModel,
   deleteCouponModel
@@ -83,18 +84,30 @@ module.exports = {
       return helper.response(response, 400, 'Bad Request', error)
     }
   },
+  getCouponActive: async (_request, response) => {
+    try {
+      const result = await getCouponActiveModel()
+      return helper.response(response, 200, 'Success get active coupon', result)
+    } catch (error) {
+      return helper.response(response, 400, 'Bad Request', error)
+    }
+  },
   postCoupon: async (request, response) => {
     try {
       const {
+        productId,
         couponCode,
         couponDiscount,
+        couponDesc,
         couponStartDate,
         couponEndDate
       } = request.body
 
       const setData = {
+        product_id: productId,
         coupon_code: couponCode,
         coupon_discount: couponDiscount,
+        coupon_desc: couponDesc,
         coupon_start_date: couponStartDate,
         coupon_end_date: couponEndDate,
         coupon_created_at: new Date()
@@ -111,15 +124,19 @@ module.exports = {
     try {
       const { id } = request.params
       const {
+        productId,
         couponCode,
         couponDiscount,
+        couponDesc,
         couponStartDate,
         couponEndDate
       } = request.body
 
       const setData = {
+        product_id: productId,
         coupon_code: couponCode,
         coupon_discount: couponDiscount,
+        coupon_desc: couponDesc,
         coupon_start_date: couponStartDate,
         coupon_end_date: couponEndDate,
         coupon_updated_at: new Date()
