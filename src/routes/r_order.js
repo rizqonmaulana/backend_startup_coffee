@@ -5,11 +5,13 @@ const {
   getOrderDetailHistory,
   getOrderAdmin,
   getOrderYearIncome,
+  getOrderWeekCount,
+  getOrderDailyIncome,
   patchOrder,
   postOrder,
   deleteOrder
 } = require('../controller/c_order')
-// const { isLogin } = require('../middleware/auth')
+const { isLogin, isAdmin } = require('../middleware/auth')
 const {
   getOrderByUserIdRedis,
   getOrderDetailByUserIdRedis,
@@ -17,38 +19,25 @@ const {
   clearOrderByIdRedis
 } = require('../middleware/redis')
 
-router.get(
-  '/:customerId',
-  // isLogin,
-  getOrderByUserIdRedis,
-  getOrderByUserId
-)
+router.get('/:customerId', isLogin, getOrderByUserIdRedis, getOrderByUserId)
 router.get(
   '/history/:customerId',
-  // isLogin,
+  isLogin,
   getOrderDetailByUserIdRedis,
   getOrderDetailHistory
 )
 router.get(
   '/invoice/:invoice',
-  // isLogin,
+  isLogin,
   getOrderByInvoiceRedis,
   getOrderByInvoice
 )
-router.get('/list/admin', getOrderAdmin)
-router.get('/year/income', getOrderYearIncome)
-router.post(
-  '/',
-  // isLogin,
-  clearOrderByIdRedis,
-  postOrder
-)
+router.get('/admin/list', isLogin, isAdmin, getOrderAdmin)
+router.get('/admin/year-income', isLogin, isAdmin, getOrderYearIncome)
+router.get('/admin/week-order', isLogin, isAdmin, getOrderWeekCount)
+router.get('/admin/daily-income', isLogin, isAdmin, getOrderDailyIncome)
+router.post('/', isLogin, clearOrderByIdRedis, postOrder)
 router.patch('/', patchOrder)
-router.delete(
-  '/:invoice',
-  // isLogin,
-  clearOrderByIdRedis,
-  deleteOrder
-)
+router.delete('/:invoice', isLogin, clearOrderByIdRedis, deleteOrder)
 
 module.exports = router

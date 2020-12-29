@@ -60,6 +60,26 @@ module.exports = {
       )
     })
   },
+  getOrderWeekCountModel: () => {
+    return new Promise((resolve, reject) => {
+      connection.query(
+        'SELECT COUNT(order_id) AS weekOrder FROM orders WHERE YEARWEEK(order_created_at) = YEARWEEK(NOW())',
+        (error, result) => {
+          !error ? resolve(result) : reject(new Error(error))
+        }
+      )
+    })
+  },
+  getOrderDailyIncomeModel: (dateNow) => {
+    return new Promise((resolve, reject) => {
+      connection.query(
+        `SELECT SUM(order_total) AS total_price FROM orders WHERE order_created_at LIKE '%${dateNow}%'`,
+        (error, result) => {
+          !error ? resolve(result) : reject(new Error(error))
+        }
+      )
+    })
+  },
   postOrderModel: (setData) => {
     return new Promise((resolve, reject) => {
       connection.query('INSERT INTO orders SET ?', setData, (error, result) => {

@@ -3,6 +3,8 @@ const {
   getOrderByInvoiceModel,
   getOrderAdminModel,
   getOrderYearIncomeModel,
+  getOrderWeekCountModel,
+  getOrderDailyIncomeModel,
   postOrderModel,
   patchOrderModel,
   deleteOrderModel,
@@ -120,6 +122,33 @@ module.exports = {
         response,
         200,
         'Success get order year income',
+        result
+      )
+    } catch (error) {
+      return helper.response(response, 400, 'Bad Request', error)
+    }
+  },
+  getOrderWeekCount: async (_request, response) => {
+    try {
+      const result = await getOrderWeekCountModel()
+      return helper.response(
+        response,
+        200,
+        'Success get order week count',
+        result
+      )
+    } catch (error) {
+      return helper.response(response, 400, 'Bad Request', error)
+    }
+  },
+  getOrderDailyIncome: async (_request, response) => {
+    try {
+      const dateNow = new Date().toISOString().slice(0, 10)
+      const result = await getOrderDailyIncomeModel(dateNow)
+      return helper.response(
+        response,
+        200,
+        'Success get order daily income',
         result
       )
     } catch (error) {
