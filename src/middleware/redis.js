@@ -159,6 +159,22 @@ module.exports = {
       }
     })
   },
+  getCouponActiveRedis: (_request, response, next) => {
+    client.get('getcouponactive', (error, result) => {
+      if (!error && result != null) {
+        console.log('data ada didalam redis')
+        return helper.response(
+          response,
+          200,
+          'Success get active coupon',
+          JSON.parse(result)
+        )
+      } else {
+        console.log('data tidak ada didalam redis')
+        next()
+      }
+    })
+  },
   clearCouponRedis: (request, _response, next) => {
     client.keys('getcoupon*', (_error, result) => {
       console.log(result)

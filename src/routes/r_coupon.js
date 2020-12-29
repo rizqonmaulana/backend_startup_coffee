@@ -11,10 +11,11 @@ const { isLogin, isAdmin } = require('../middleware/auth')
 const {
   getCouponRedis,
   getCouponByIdRedis,
+  getCouponActiveRedis,
   clearCouponRedis
 } = require('../middleware/redis')
 
-router.get('/active', getCouponActive)
+router.get('/active', getCouponActiveRedis, getCouponActive)
 router.get('/', getCouponRedis, getCoupon)
 router.get('/:id', getCouponByIdRedis, getCouponById)
 router.post('/', isLogin, isAdmin, clearCouponRedis, postCoupon)

@@ -87,6 +87,7 @@ module.exports = {
   getCouponActive: async (_request, response) => {
     try {
       const result = await getCouponActiveModel()
+      client.setex('getcouponactive', 3600, JSON.stringify(result))
       return helper.response(response, 200, 'Success get active coupon', result)
     } catch (error) {
       return helper.response(response, 400, 'Bad Request', error)
