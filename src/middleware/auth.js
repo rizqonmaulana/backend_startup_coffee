@@ -14,7 +14,7 @@ module.exports = {
           (error && error.name === 'TokenExpiredError')
         ) {
           console.log(error)
-          return helper.response(response, 400, error.message)
+          return helper.response(response, 403, error.message)
         } else {
           request.token = result
           next()
@@ -28,7 +28,11 @@ module.exports = {
     const userData = request.token
 
     if (userData.userRole !== 1) {
-      return helper.response(response, 400, 'Your are not allowed to access this page')
+      return helper.response(
+        response,
+        400,
+        'Your are not allowed to access this page'
+      )
     } else {
       next()
     }

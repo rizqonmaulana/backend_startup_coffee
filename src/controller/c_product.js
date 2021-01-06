@@ -171,7 +171,6 @@ module.exports = {
 
       const sizeResult = await postSizeModel(setDataSize)
       const deliveryResult = await postDeliveryModel(setDataDelivery)
-
       const setData = {
         product_name: productName,
         product_price: productPrice,
@@ -185,7 +184,7 @@ module.exports = {
         delivery_id: deliveryResult.delivery_id,
         product_created_at: new Date()
       }
-
+      console.log(setData)
       const result = await postProductModel(setData)
       return helper.response(response, 200, 'Success Post Product', result)
     } catch (error) {
@@ -269,6 +268,7 @@ module.exports = {
         const result = await patchProductModel(setData, id)
         return helper.response(response, 200, 'Success Post Product', result)
       } else {
+        console.log('masuk else')
         return helper.response(response, 404, `Product By Id : ${id} Not Found`)
       }
     } catch (error) {

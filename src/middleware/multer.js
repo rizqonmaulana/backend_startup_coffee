@@ -3,6 +3,7 @@ const helper = require('../helper/response')
 
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
+    console.log(file)
     cb(null, './uploads')
   },
   filename: function (req, file, cb) {
@@ -15,7 +16,7 @@ const fileFilter = (req, file, cb) => {
   if (file.mimetype === 'image/png' || file.mimetype === 'image/jpeg') {
     cb(null, true)
   } else {
-    cb(new Error('Image extension must be jpg / png'), false)
+    cb(new Error('File extension must be jpg / png'), false)
   }
 }
 
