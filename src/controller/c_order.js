@@ -2,6 +2,7 @@ const {
   getOrderByUserIdModel,
   getOrderByInvoiceModel,
   getOrderAdminModel,
+  getOrderDetailAdminModel,
   getOrderYearIncomeModel,
   getOrderWeekCountModel,
   getOrderDailyIncomeModel,
@@ -109,6 +110,20 @@ module.exports = {
         response,
         200,
         'Success get order for admin',
+        result
+      )
+    } catch (error) {
+      return helper.response(response, 400, 'Bad Request', error)
+    }
+  },
+  getOrderDetailAdmin: async (request, response) => {
+    const { orderId } = request.query
+    try {
+      const result = await getOrderDetailAdminModel(orderId)
+      return helper.response(
+        response,
+        200,
+        'success get order detail for admin',
         result
       )
     } catch (error) {

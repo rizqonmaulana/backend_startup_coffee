@@ -46,6 +46,20 @@ module.exports = {
       )
     })
   },
+  getCouponActiveByIdModel: (id) => {
+    return new Promise((resolve, reject) => {
+      connection.query(
+        `SELECT coupon_id, coupon.product_id, coupon_code, 
+        coupon_discount, coupon_desc, coupon_start_date, 
+        coupon_end_date, product.product_name, product.product_pic 
+        FROM product JOIN coupon ON coupon.product_id = product.product_id 
+        WHERE CURRENT_DATE >= coupon_start_date && CURRENT_DATE <= coupon_end_date && coupon_id = ${id}`,
+        (error, result) => {
+          !error ? resolve(result) : reject(new Error(error))
+        }
+      )
+    })
+  },
   getCouponCountModel: () => {
     return new Promise((resolve, reject) => {
       connection.query(

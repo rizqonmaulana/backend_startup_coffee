@@ -3,6 +3,7 @@ const {
   getCoupon,
   getCouponById,
   getCouponActive,
+  getCouponActiveById,
   postCoupon,
   patchCoupon,
   deleteCoupon
@@ -16,6 +17,7 @@ const {
 } = require('../middleware/redis')
 
 router.get('/active', getCouponActiveRedis, getCouponActive)
+router.get('/active/:id', getCouponActiveById)
 router.get('/', getCouponRedis, getCoupon)
 router.get('/:id', getCouponByIdRedis, getCouponById)
 router.post('/', isLogin, isAdmin, clearCouponRedis, postCoupon)

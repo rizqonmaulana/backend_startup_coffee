@@ -23,22 +23,22 @@ module.exports = {
   },
   patchDeliveryModel: (setDataDelivery, getDeliveryId) => {
     return new Promise((resolve, reject) => {
-      console.log(
-        connection.query(
-          'UPDATE delivery SET ? WHERE delivery_id = ?',
-          [setDataDelivery, getDeliveryId],
-          (error, result) => {
-            if (!error) {
-              const newResult = {
-                delivery_id: getDeliveryId,
-                ...setDataDelivery
-              }
-              resolve(newResult)
-            } else {
-              reject(new Error(error))
+      connection.query(
+        'UPDATE delivery SET ? WHERE delivery_id = ?',
+        [setDataDelivery, getDeliveryId],
+        (error, result) => {
+          if (!error) {
+            const newResult = {
+              delivery_id: getDeliveryId,
+              ...setDataDelivery
             }
+            console.log(result)
+            resolve(newResult)
+          } else {
+            console.log(error)
+            reject(new Error(error))
           }
-        )
+        }
       )
     })
   }

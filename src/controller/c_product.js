@@ -1,5 +1,6 @@
 const {
   getProductModel,
+  getProductWOPaginationModel,
   getProductCountModel,
   getProductByIdModel,
   postProductModel,
@@ -9,7 +10,8 @@ const {
   getProductCountWithSearchModel,
   sortProductModel,
   getProductBySearchAndSortModel,
-  getProductDetailModel
+  getProductDetailModel,
+  getProductPriceModel
 } = require('../model/m_product')
 const { postSizeModel, patchSizeModel } = require('../model/m_size')
 const { postDeliveryModel, patchDeliveryModel } = require('../model/m_delivery')
@@ -22,7 +24,7 @@ const fs = require('fs')
 module.exports = {
   getProduct: async (request, response) => {
     try {
-      let { search, page, limit, sortBy, sortType } = request.query
+      let { search, page, limit, sortBy, sortType, id } = request.query
 
       page = parseInt(page)
       limit = parseInt(limit)
@@ -69,8 +71,12 @@ module.exports = {
         result = await getProductBySearchModel(search, limit, offset)
       } else if (sortBy && sortType) {
         result = await sortProductModel(sortBy, sortType, limit, offset)
-      } else {
+      } else if (limit && page) {
         result = await getProductModel(limit, offset)
+      } else if (id) {
+        result = await getProductPriceModel(id)
+      } else {
+        result = await getProductWOPaginationModel()
       }
 
       // redis
@@ -235,12 +241,14 @@ module.exports = {
 
       if (request.file === undefined) {
         newPic = product[0].product_pic
-      } else {
+      } else if (request.file && product[0].product_pic) {
         newPic = request.file.filename
         fs.unlink(`./uploads/${product[0].product_pic}`, function (err) {
           if (err) throw err
           console.log('File deleted!')
         })
+      } else if (request.file) {
+        newPic = request.file.filename
       }
 
       const setData = {
@@ -266,7 +274,7 @@ module.exports = {
         await patchSizeModel(setDataSize, getSizeId)
         await patchDeliveryModel(setDataDelivery, getDeliveryId)
         const result = await patchProductModel(setData, id)
-        return helper.response(response, 200, 'Success Post Product', result)
+        return helper.response(response, 200, 'Success Patch Product', result)
       } else {
         console.log('masuk else')
         return helper.response(response, 404, `Product By Id : ${id} Not Found`)
@@ -281,10 +289,12 @@ module.exports = {
 
       const checkId = await getProductByIdModel(id)
       if (checkId.length > 0) {
-        fs.unlink(`./uploads/${checkId[0].product_pic}`, function (err) {
-          if (err) throw err
-          console.log('File deleted!')
-        })
+        if (checkId[0].product_pic) {
+          fs.unlink(`./uploads/${checkId[0].product_pic}`, function (err) {
+            if (err) throw err
+            console.log('File deleted!')
+          })
+        }
         const result = await deleteProductModel(id)
         return helper.response(
           response,

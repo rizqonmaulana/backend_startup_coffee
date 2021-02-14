@@ -3,6 +3,7 @@ const {
   getCouponByIdModel,
   getCouponCountModel,
   getCouponActiveModel,
+  getCouponActiveByIdModel,
   postCouponModel,
   patchCouponModel,
   deleteCouponModel
@@ -89,6 +90,21 @@ module.exports = {
       const result = await getCouponActiveModel()
       client.setex('getcouponactive', 3600, JSON.stringify(result))
       return helper.response(response, 200, 'Success get active coupon', result)
+    } catch (error) {
+      return helper.response(response, 400, 'Bad Request', error)
+    }
+  },
+  getCouponActiveById: async (request, response) => {
+    try {
+      const { id } = request.params
+      const result = await getCouponActiveByIdModel(id)
+      client.setex('getcouponactivebyid', 3600, JSON.stringify(result))
+      return helper.response(
+        response,
+        200,
+        `Success get active coupon by id ${id}`,
+        result
+      )
     } catch (error) {
       return helper.response(response, 400, 'Bad Request', error)
     }

@@ -37,15 +37,18 @@ module.exports = {
   },
   updatePasswordModel: (password, email) => {
     return new Promise((resolve, reject) => {
-      connection.query(
-        `UPDATE user SET user_password = '${password}' WHERE user_email = '${email}'`,
-        (error, result) => {
-          if (!error) {
-            resolve(result)
-          } else {
-            reject(error)
+      console.log('masuk model password')
+      console.log(
+        connection.query(
+          `UPDATE user SET user_password = '${password}' WHERE user_email = '${email}'`,
+          (error, result) => {
+            if (!error) {
+              resolve(result)
+            } else {
+              reject(error)
+            }
           }
-        }
+        )
       )
     })
   },

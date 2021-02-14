@@ -1,6 +1,8 @@
 const {
   getProductByCategoryModel,
-  getCategoryCountModel
+  getProductByCategorySearchModel,
+  getCategoryCountModel,
+  getCategorySearchCountModel
 } = require('../model/m_category')
 const helper = require('../helper/response')
 const qs = require('querystring')
@@ -11,11 +13,15 @@ module.exports = {
   getProductByCategory: async (request, response) => {
     try {
       const { categoryName } = request.params
-      let { page, limit } = request.query
+      let { search, sortBy, sortType, page, limit } = request.query
       page = parseInt(page)
       limit = parseInt(limit)
-
-      const totalData = await getCategoryCountModel(categoryName)
+      let totalData
+      if (search) {
+        totalData = await getCategorySearchCountModel(categoryName, search)
+      } else {
+        totalData = await getCategoryCountModel(categoryName)
+      }
       const totalPage = Math.ceil(totalData / limit)
       const offset = page * limit - limit
       const prevLink =
@@ -40,11 +46,25 @@ module.exports = {
           `http://localhost:3000/category/${categoryName}?${prevLink}`
       }
 
-      const result = await getProductByCategoryModel(
-        categoryName,
-        limit,
-        offset
-      )
+      let result
+      if (search && sortBy && sortType) {
+        result = await getProductByCategorySearchModel(
+          categoryName,
+          search,
+          sortBy,
+          sortType,
+          limit,
+          offset
+        )
+      } else {
+        result = await getProductByCategoryModel(
+          categoryName,
+          sortBy,
+          sortType,
+          limit,
+          offset
+        )
+      }
 
       // redis
       const newData = {

@@ -4,6 +4,7 @@ const {
   getOrderByInvoice,
   getOrderDetailHistory,
   getOrderAdmin,
+  getOrderDetailAdmin,
   getOrderYearIncome,
   getOrderWeekCount,
   getOrderDailyIncome,
@@ -33,6 +34,7 @@ router.get(
   getOrderByInvoice
 )
 router.get('/admin/list', isLogin, isAdmin, getOrderAdmin)
+router.get('/admin/list/detail', isLogin, isAdmin, getOrderDetailAdmin)
 router.get('/admin/year-income', isLogin, isAdmin, getOrderYearIncome)
 router.get('/admin/week-order', isLogin, isAdmin, getOrderWeekCount)
 router.get('/admin/daily-income', isLogin, isAdmin, getOrderDailyIncome)

@@ -76,8 +76,12 @@ module.exports = {
   },
   updatePassword: async (request, response) => {
     try {
+      console.log('masuk controller')
       const { email } = request.params
       const { userPassword } = request.body
+
+      console.log('ini email => ' + email)
+      console.log('ini password => ' + userPassword)
 
       const salt = bcrypt.genSaltSync(10)
       const encryptPassword = bcrypt.hashSync(userPassword, salt)
@@ -85,6 +89,7 @@ module.exports = {
       const getEmail = await getUserModel(email)
 
       if (getEmail.length > 0) {
+        console.log('masuk if controller')
         const result = await updatePasswordModel(encryptPassword, email)
         return helper.response(
           response,

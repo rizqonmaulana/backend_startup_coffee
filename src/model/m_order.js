@@ -43,7 +43,17 @@ module.exports = {
   getOrderAdminModel: () => {
     return new Promise((resolve, reject) => {
       connection.query(
-        'SELECT * FROM orders WHERE order_status = 0',
+        'SELECT  orders.*, user.user_name, user.user_address, user.user_phone FROM orders JOIN user ON orders.customer_id = user.user_id WHERE order_status = 0',
+        (error, result) => {
+          !error ? resolve(result) : reject(new Error(error))
+        }
+      )
+    })
+  },
+  getOrderDetailAdminModel: (orderId) => {
+    return new Promise((resolve, reject) => {
+      connection.query(
+        `SELECT product.product_name, product.product_pic FROM orders JOIN order_detail ON orders.order_id = order_detail.order_id JOIN product ON order_detail.product_id = product.product_id WHERE orders.order_id = ${orderId}`,
         (error, result) => {
           !error ? resolve(result) : reject(new Error(error))
         }
