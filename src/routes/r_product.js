@@ -18,13 +18,7 @@ const {
 
 router.get('/', isLogin, getProductRedis, getProduct)
 router.get('/:id', isLogin, getProductByIdRedis, getProductById)
-router.get(
-  '/detail/:id',
-  isLogin,
-  isAdmin,
-  getProductDetaildRedis,
-  getProductDetail
-)
+router.get('/detail/:id', isLogin, getProductDetaildRedis, getProductDetail)
 router.post(
   '/',
   isLogin,

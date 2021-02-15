@@ -158,19 +158,15 @@ module.exports = {
   loginUser: async (request, response) => {
     try {
       const { userEmail, userPassword } = request.body
-      // proses 1 : apakah email ada di db ?
       const checkUserData = await checkEmailModel(userEmail)
 
       if (checkUserData.length > 0) {
-        // proses 2 : apakah password benar ?
         const checkPassword = bcrypt.compareSync(
           userPassword,
           checkUserData[0].user_password
         )
 
         if (checkPassword) {
-          // proses 3 : set JWT
-          //   nama column db : convert to camelCase (for standard js)
           const {
             user_id: userId,
             user_name: userName,
@@ -185,7 +181,7 @@ module.exports = {
             userRole
           }
 
-          const token = jwt.sign(payload, 'RAHASIA', { expiresIn: '3h' })
+          const token = jwt.sign(payload, 'RAHASIA', { expiresIn: '24h' })
           const result = { ...payload, token }
           return helper.response(response, 200, 'Login Success', result)
         } else {
