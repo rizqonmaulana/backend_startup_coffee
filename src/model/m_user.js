@@ -72,11 +72,45 @@ module.exports = {
   checkEmailModel: (userEmail) => {
     return new Promise((resolve, reject) => {
       connection.query(
-        'SELECT user_id, user_name, user_email, user_password, user_role FROM user WHERE user_email = ?',
+        'SELECT user_id, user_name, user_email, user_password, user_role FROM user WHERE user_email = ? AND user_status = 1',
         userEmail,
         (error, result) => {
           !error ? resolve(result) : reject(new Error(error))
         }
+      )
+    })
+  },
+  activateUser: (key) => {
+    return new Promise((resolve, reject) => {
+      connection.query(
+        `UPDATE user SET user_status = 1, user_key = null WHERE user_key = '${key}'`,
+        (error, result) => {
+          !error ? resolve(result) : reject(new Error(error))
+        }
+      )
+    })
+  },
+  forgotPassword: (key, email) => {
+    return new Promise((resolve, reject) => {
+      console.log(
+        connection.query(
+          `UPDATE user SET user_key = '${key}' WHERE user_email = '${email}'`,
+          (error, result) => {
+            !error ? resolve(result) : reject(new Error(error))
+          }
+        )
+      )
+    })
+  },
+  resetPassword: (password, key) => {
+    return new Promise((resolve, reject) => {
+      console.log(
+        connection.query(
+          `UPDATE user SET user_password = '${password}', user_key = null WHERE user_key = '${key}'`,
+          (error, result) => {
+            !error ? resolve(result) : reject(new Error(error))
+          }
+        )
       )
     })
   }

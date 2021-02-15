@@ -4,13 +4,17 @@ const helper = require('../helper/response')
 const redis = require('redis')
 const client = redis.createClient()
 const fs = require('fs')
+const nodemailer = require('nodemailer')
 
 const {
   registerUserModel,
   checkEmailModel,
   updateUserModel,
   updatePasswordModel,
-  getUserModel
+  getUserModel,
+  activateUser,
+  forgotPassword,
+  resetPassword
 } = require('../model/m_user')
 
 module.exports = {
@@ -31,12 +35,16 @@ module.exports = {
       const salt = bcrypt.genSaltSync(10)
       const encryptPassword = bcrypt.hashSync(userPassword, salt)
 
+      const crypto = require('crypto')
+      const userKey = crypto.randomBytes(20).toString('hex')
+
       const setData = {
         user_name: userName,
         user_email: userEmail,
         user_pic: request.file === undefined ? '' : request.file.filename,
         user_password: encryptPassword,
         user_role: 0,
+        user_key: userKey,
         user_phone: userPhone,
         user_address: userAddress,
         user_first_name: userFirstName,
@@ -46,7 +54,6 @@ module.exports = {
         user_created_at: new Date()
       }
 
-      //   cek apakah email sudah terdaftar ?
       const checkDuplicateEmail = await checkEmailModel(userEmail)
 
       if (checkDuplicateEmail.length > 0) {
@@ -58,6 +65,34 @@ module.exports = {
       }
 
       const result = await registerUserModel(setData)
+      if (result) {
+        const transporter = nodemailer.createTransport({
+          host: 'smtp.gmail.com',
+          port: 587,
+          secure: false, // true for 465, false for other ports
+          auth: {
+            user: 'kostkost169@gmail.com', // generated ethereal user
+            pass: 'admin@123456' // generated ethereal password
+          }
+        })
+        const mailOptions = {
+          from: '"startup coffee" <startup coffee@gmail.com', // sender address
+          to: userEmail, // list of receivers
+          subject: 'startup coffee - Activate account', // Subject line
+          html: `<p>To Account  </p>
+          <p>Click link bellow to activate your account</p>
+          <a href="${process.env.URL}/active/${userKey}">Activate my account</a>`
+        }
+        await transporter.sendMail(mailOptions, function (error, info) {
+          if (error) {
+            console.log(error)
+            return helper.response(response, 400, 'Email not send !')
+          } else {
+            console.log(info)
+            return helper.response(response, 200, 'Email has been send !')
+          }
+        })
+      }
 
       return helper.response(response, 200, 'Success Register User', result)
     } catch (error) {
@@ -190,6 +225,96 @@ module.exports = {
       } else {
         return helper.response(response, 400, 'Account not Registered')
       }
+    } catch (error) {
+      return helper.response(response, 400, 'Bad Request', error)
+    }
+  },
+  activateUser: async (request, response) => {
+    try {
+      const { key } = request.body
+      console.log(key)
+      console.log('ini key')
+
+      const result = await activateUser(key)
+
+      return helper.response(response, 200, 'Account has been active ', result)
+    } catch (error) {
+      return helper.response(response, 400, 'Bad Request', error)
+    }
+  },
+  forgotPassword: async (request, response) => {
+    try {
+      const { email } = request.body
+
+      const emailCheck = await checkEmailModel(email)
+
+      if (emailCheck.length < 1) {
+        return helper.response(response, 400, 'Account not found')
+      }
+
+      const crypto = require('crypto')
+      const key = crypto.randomBytes(20).toString('hex')
+
+      const result = await forgotPassword(key, email)
+
+      if (result) {
+        const transporter = nodemailer.createTransport({
+          host: 'smtp.gmail.com',
+          port: 587,
+          secure: false, // true for 465, false for other ports
+          auth: {
+            user: 'kostkost169@gmail.com', // generated ethereal user
+            pass: 'admin@123456' // generated ethereal password
+          }
+        })
+        const mailOptions = {
+          from: '"startup coffee" <startup coffee@gmail.com', // sender address
+          to: email, // list of receivers
+          subject: 'startup coffee - Forgot password', // Subject line
+          html: `<p>To Account  </p>
+          <p>Click link bellow to reset your password</p>
+          <a href="${process.env.URL}/forgot?key=${key}">Activate my account</a>`
+        }
+        await transporter.sendMail(mailOptions, function (error, info) {
+          if (error) {
+            console.log(error)
+            return helper.response(response, 400, 'Email not send !')
+          } else {
+            console.log(info)
+            return helper.response(response, 200, 'Email has been send !')
+          }
+        })
+      }
+
+      return helper.response(
+        response,
+        200,
+        'Please check your email to reset your password ',
+        result
+      )
+    } catch (error) {
+      return helper.response(response, 400, 'Bad Request', error)
+    }
+  },
+  resetPassword: async (request, response) => {
+    try {
+      const { password, confirmPassword, key } = request.body
+
+      if (password !== confirmPassword) {
+        return helper.response(response, 400, 'Password not match')
+      }
+
+      const salt = bcrypt.genSaltSync(10)
+      const encryptPassword = bcrypt.hashSync(password, salt)
+
+      const result = await resetPassword(encryptPassword, key)
+
+      return helper.response(
+        response,
+        200,
+        'Your password has been updated ',
+        result
+      )
     } catch (error) {
       return helper.response(response, 400, 'Bad Request', error)
     }
