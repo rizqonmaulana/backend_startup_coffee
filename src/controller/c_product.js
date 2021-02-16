@@ -53,8 +53,8 @@ module.exports = {
         totalPage,
         limit,
         totalData,
-        nextLink: nextLink && `http://localhost:3000/product?${nextLink}`,
-        prevLink: prevLink && `http://localhost:3000/product?${prevLink}`
+        nextLink: nextLink && process.env.URL + `/product?${nextLink}`,
+        prevLink: prevLink && process.env.URL + `/product?${prevLink}`
       }
 
       // decide result model to use

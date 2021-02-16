@@ -39,11 +39,9 @@ module.exports = {
         limit,
         totalData,
         nextLink:
-          nextLink &&
-          `http://localhost:3000/category/${categoryName}?${nextLink}`,
+          nextLink && process.env.URL + `/category/${categoryName}?${nextLink}`,
         prevLink:
-          prevLink &&
-          `http://localhost:3000/category/${categoryName}?${prevLink}`
+          prevLink && process.env.URL + `/category/${categoryName}?${prevLink}`
       }
 
       let result
