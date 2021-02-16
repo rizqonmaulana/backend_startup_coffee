@@ -124,5 +124,15 @@ module.exports = {
         }
       )
     })
+  },
+  getChartData: () => {
+    return new Promise((resolve, reject) => {
+      connection.query(
+        'SELECT SUM(order_total) AS total FROM orders WHERE YEAR(order_created_at) = YEAR(NOW()) GROUP BY MONTH(order_created_at)',
+        (error, result) => {
+          !error ? resolve(result) : reject(new Error(error))
+        }
+      )
+    })
   }
 }

@@ -9,7 +9,8 @@ const {
   postOrderModel,
   patchOrderModel,
   deleteOrderModel,
-  getOrderDetailHistoryModel
+  getOrderDetailHistoryModel,
+  getChartData
 } = require('../model/m_order')
 const {
   postOrderDetailModel,
@@ -256,6 +257,14 @@ module.exports = {
           `Product By Id : ${invoice} Not Found`
         )
       }
+    } catch (error) {
+      return helper.response(response, 400, 'Bad Request', error)
+    }
+  },
+  getChartData: async (request, response) => {
+    try {
+      const result = await getChartData()
+      return helper.response(response, 200, 'success get chart data', result)
     } catch (error) {
       return helper.response(response, 400, 'Bad Request', error)
     }

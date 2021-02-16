@@ -10,7 +10,8 @@ const {
   getOrderDailyIncome,
   patchOrder,
   postOrder,
-  deleteOrder
+  deleteOrder,
+  getChartData
 } = require('../controller/c_order')
 const { isLogin, isAdmin } = require('../middleware/auth')
 const {
@@ -38,6 +39,7 @@ router.get('/admin/list/detail', isLogin, isAdmin, getOrderDetailAdmin)
 router.get('/admin/year-income', isLogin, isAdmin, getOrderYearIncome)
 router.get('/admin/week-order', isLogin, isAdmin, getOrderWeekCount)
 router.get('/admin/daily-income', isLogin, isAdmin, getOrderDailyIncome)
+router.get('/admin/chart', getChartData)
 router.post('/', isLogin, clearOrderByIdRedis, postOrder)
 router.patch('/', patchOrder)
 router.delete('/:invoice', isLogin, clearOrderByIdRedis, deleteOrder)
