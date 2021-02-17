@@ -1,6 +1,11 @@
 <h1 align="center">ExpressJS - Backend Startup Coffee</h1>
+<p align="center">
+    <a href="https://github.com/rizqonmaulana/backend_startup_coffee/issues">Report Bug</a>
+    ·
+    <a href="https://github.com/rizqonmaulana/backend_startup_coffee/issues">Request Feature</a>
+  </p>
 
-#background_projek. [More about Express](https://en.wikipedia.org/wiki/Express.js)
+Startup coffee is a website that was built for coffee shop or caffee owners to handle orders in their shop, as an owner you can add product, add promo, manage orders, get daily order profit, weeks order amount and anual sales data in a chart. you can manage orders easily and quickly, because everything is handled by the system automatically. coffee startup is built with javascript, express js, vue js and mysql. [More about Express](https://en.wikipedia.org/wiki/Express.js)
 
 ## Built With
 
@@ -36,7 +41,9 @@ DB_USER=root
 DB_PASS=
 DB_TIMEZONE=UTC
 PORT=3000
- 
+URL=http://localhost:8080
+
+
 ```
 
 ## License

@@ -94,7 +94,12 @@ module.exports = {
         })
       }
 
-      return helper.response(response, 200, 'Success Register User', result)
+      return helper.response(
+        response,
+        200,
+        'Success Register User, please check your email to activate your account',
+        result
+      )
     } catch (error) {
       return helper.response(response, 400, 'Bad Request', error)
     }

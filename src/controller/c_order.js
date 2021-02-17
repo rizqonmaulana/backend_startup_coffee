@@ -215,7 +215,12 @@ module.exports = {
         }
       }
 
-      return helper.response(response, 200, 'Success post order', result)
+      return helper.response(
+        response,
+        200,
+        'Order success, please pay your order',
+        result
+      )
     } catch (error) {
       return helper.response(response, 400, 'Bad Request', error)
     }

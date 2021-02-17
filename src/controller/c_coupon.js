@@ -132,7 +132,7 @@ module.exports = {
 
       const result = await postCouponModel(setData)
 
-      return helper.response(response, 200, 'Success post coupon', result)
+      return helper.response(response, 200, 'Success add new coupon', result)
     } catch (error) {
       return helper.response(response, 400, 'Bad Request', error)
     }
